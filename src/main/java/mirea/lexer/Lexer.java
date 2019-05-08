@@ -3,7 +3,9 @@ package mirea.lexer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -15,6 +17,11 @@ public class Lexer {
     private String errorMessage = "";
     private Set<Character> blankChars = new HashSet<>();
 
+    /**
+     * Converts program on specified language to tokens
+     *
+     * @param filePath location of file with input code
+     */
     public Lexer(String filePath) {
         try (Stream<String> st = Files.lines(Paths.get(filePath))) {
             st.forEach(input::append);
@@ -23,7 +30,7 @@ public class Lexer {
             errorMessage = "Could not read file: " + filePath;
             return;
         }
-
+        /* Initializing blank chars array */
         blankChars.add('\r');
         blankChars.add('\n');
         blankChars.add((char) 8 );
@@ -103,5 +110,13 @@ public class Lexer {
 
     public boolean isExausthed() {
         return exausthed;
+    }
+    public List<Token> getAllTokens() {
+        List<Token> allTokens = new ArrayList<>();
+        while (!isExausthed()){
+            allTokens.add(currentToken());
+            moveAhead();
+        }
+        return allTokens;
     }
 }
