@@ -71,5 +71,12 @@ public class LexerTest {
         for (int i = 0; i < ar.length; i++) {
             Assert.assertEquals(ar[i],list.get(i));
         }
+
+        lexer = new Lexer("test2.txt");
+        list = lexer.getAllTokens();
+        Token[] ar1 = {Token.IDENTIFIER, Token.TK_LEG, Token.IDENTIFIER};
+        for (int i = 0; i < ar1.length; i++) {
+            Assert.assertEquals(ar1[i],list.get(i));
+        }
     }
 }

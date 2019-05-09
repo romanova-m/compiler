@@ -12,10 +12,11 @@ public enum Token {
     TK_NOT ("~"),
     TK_AND ("&"),
     TK_OR ("\\|"),
-    TK_LESS ("<"),
+    DIFFERENT ("<>"),
     TK_LEG ("<="),
-    TK_GT (">"),
+    TK_LESS ("<"),
     TK_GEQ (">="),
+    TK_GT (">"),
     TK_EQ ("=="),
     TK_ASSIGN ("="),
     TK_OPEN ("\\("),
@@ -31,7 +32,6 @@ public enum Token {
     TK_KEY_ENDIF ("endif"),
     OPEN_BRACKET ("\\{"),
     CLOSE_BRACKET ("\\}"),
-    DIFFERENT ("<>"),
 
     STRING ("\"[^\"]+\""),
     FLOAT ("\\d+\\.\\d+"), // ORDER IS IMPORTANT
