@@ -11,10 +11,10 @@ public class LexerTest {
     @Test
     public void currentToken() {
         Lexer lexer = new Lexer(testFolder + "test.txt");
-        Assert.assertEquals(Token.TK_KEY_IF,lexer.currentToken());
-        Assert.assertEquals(Token.TK_KEY_IF, lexer.currentToken());
+        Assert.assertEquals(TokenType.TK_KEY_IF,lexer.currentTokenType());
+        Assert.assertEquals(TokenType.TK_KEY_IF, lexer.currentTokenType());
         lexer.moveAhead();
-        Assert.assertEquals(Token.TK_OPEN, lexer.currentToken());
+        Assert.assertEquals(TokenType.TK_OPEN, lexer.currentTokenType());
     }
 
     @Test
@@ -37,14 +37,14 @@ public class LexerTest {
     @Test
     public void errorMessage() {
         Lexer lexer = new Lexer( testFolder + "test1.txt");
-        lexer.currentToken();
+        lexer.currentTokenType();
         Assert.assertEquals("Unexpected symbol: '$'", lexer.errorMessage());
     }
 
     @Test
     public void isExausthed() {
         Lexer lexer = new Lexer(testFolder + "test1.txt");
-        lexer.currentToken();
+        lexer.currentTokenType();
         Assert.assertTrue(lexer.isExausthed()); // Unexpected symbol
 
         lexer = new Lexer(testFolder + "test3.txt"); // Empty file
@@ -67,17 +67,17 @@ public class LexerTest {
 
         lexer = new Lexer(testFolder + "test.txt");
         List<Token> list = lexer.getAllTokens();
-        Token[] ar = {Token.TK_KEY_IF, Token.TK_OPEN, Token.IDENTIFIER,
-                Token.TK_CLOSE, Token.IDENTIFIER, Token.TK_PLUS, Token.INTEGER, Token.TK_SEMI};
+        TokenType[] ar = {TokenType.TK_KEY_IF, TokenType.TK_OPEN, TokenType.IDENTIFIER,
+                TokenType.TK_CLOSE, TokenType.IDENTIFIER, TokenType.TK_PLUS, TokenType.INTEGER, TokenType.TK_SEMI};
         for (int i = 0; i < ar.length; i++) {
-            Assert.assertEquals(ar[i],list.get(i));
+            Assert.assertEquals(ar[i],list.get(i).getTokenType());
         }
 
         lexer = new Lexer(testFolder + "test2.txt");
         list = lexer.getAllTokens();
-        Token[] ar1 = {Token.IDENTIFIER, Token.TK_LEG, Token.IDENTIFIER};
+        TokenType[] ar1 = {TokenType.IDENTIFIER, TokenType.TK_LEG, TokenType.IDENTIFIER};
         for (int i = 0; i < ar1.length; i++) {
-            Assert.assertEquals(ar1[i],list.get(i));
+            Assert.assertEquals(ar1[i],list.get(i).getTokenType());
         }
     }
 }

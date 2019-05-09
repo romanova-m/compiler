@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class Lexer {
     private StringBuilder input = new StringBuilder();
-    private Token token;
+    private TokenType tokenType;
     private String lexema;
     private boolean exausthed = false;
     private String errorMessage = "";
@@ -78,11 +78,11 @@ public class Lexer {
     }
 
     private boolean findNextToken() {
-        for (Token t : Token.values()) {
+        for (TokenType t : TokenType.values()) {
             int end = t.endOfMatch(input.toString());
 
             if (end != -1) {
-                token = t;
+                tokenType = t;
                 lexema = input.substring(0, end);
                 input.delete(0, end);
                 return true;
@@ -92,8 +92,8 @@ public class Lexer {
         return false;
     }
 
-    public Token currentToken() {
-        return token;
+    public TokenType currentTokenType() {
+        return tokenType;
     }
 
     public String currentLexema() {
@@ -114,7 +114,7 @@ public class Lexer {
     public List<Token> getAllTokens() {
         List<Token> allTokens = new ArrayList<>();
         while (!isExausthed()){
-            allTokens.add(currentToken());
+            allTokens.add(new Token(currentTokenType(), currentLexema()));
             moveAhead();
         }
         return allTokens;
