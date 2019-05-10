@@ -1,0 +1,15 @@
+if a+b == 5 && a>11
+then b = 2
+a = 4
+;
+if a+b == 5 && a>11
+then b = 2
+a = 4
+else a = (b+2)*2
+;
+if (a+b == 5)
+then a = a - 11
+;
+if a + b == 5
+then a = a - 11
+;
