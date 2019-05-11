@@ -6,8 +6,20 @@ import org.junit.Test;
 import java.util.List;
 
 public class LexerTest {
+    private String testFolder = "test_files/";
+
 
     @Test
+    public void getAllTokens() {
+        Lexer lexer = new Lexer(testFolder + "typesTest");
+        List<Token> tokenList = lexer.getAllTokens();
+        for (int i = 0; i < tokenList.size(); i++) {
+            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+        }
+    }
+
+
+    /*@Test
     public void currentToken() {
         Lexer lexer = new Lexer("test.txt");
         Assert.assertEquals(Token.TK_KEY_IF,lexer.currentToken());
@@ -78,5 +90,5 @@ public class LexerTest {
         for (int i = 0; i < ar1.length; i++) {
             Assert.assertEquals(ar1[i],list.get(i));
         }
-    }
+    }*/
 }

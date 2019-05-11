@@ -22,7 +22,16 @@ public class Parser {
 
     public boolean expr() {
         int begNum = num;
-        if (assign_stmt() || while_stmt() ||  if_stmt() || print_stmt()) {
+        if (declar_stmt() || assign_stmt() || while_stmt() ||  if_stmt() || print_stmt()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean declar_stmt() {
+        int begNum = num;
+        if (TYPE() && VAR() && SEMI()) {
             return true;
         }
         num = begNum;
@@ -83,9 +92,6 @@ public class Parser {
         return false;
     }
 
-    public boolean WHILE() {
-        return checkToken(("WHILE"));
-    }
 
     public boolean DO() {
         return checkToken("DO");
@@ -105,6 +111,14 @@ public class Parser {
         return false;
     }
 
+    public boolean print_stmt() {
+        return false;
+    }
+
+    public boolean TYPE() {
+        return checkToken("TYPE");
+    }
+
     public boolean COMP_OP() {
         return checkToken("COMP_OP");
     }
@@ -113,8 +127,9 @@ public class Parser {
         return checkToken("LOG_OP");
     }
 
-    public boolean print_stmt() {
-        return false;
+
+    public boolean WHILE() {
+        return checkToken(("WHILE"));
     }
 
     public boolean IF() {
@@ -167,15 +182,29 @@ public class Parser {
     //to add b_stmt
     public boolean value() {
         int begNum = num;
-        if (VAR() || NUM()) {
+        if (VAR() || num()) {
             return true;
         }
         num = begNum;
         return false;
     }
 
-    public boolean NUM() {
-        return checkToken("NUM");
+    public boolean num() {
+
+        int begNum = num;
+        if (DOUBLE() || INT()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean DOUBLE() {
+        return checkToken("DOUBLE");
+    }
+
+    public boolean INT() {
+        return checkToken("INT");
     }
 
     public boolean b_stmt() {
