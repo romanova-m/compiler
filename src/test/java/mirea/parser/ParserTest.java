@@ -16,6 +16,31 @@ public class ParserTest {
     }
 
     @Test
+    public void lang() {
+        Lexer lexer = new Lexer(testFolder + "langTest");
+        List<Token> tokenList = lexer.getAllTokens();
+        assertFalse(tokenList.isEmpty());
+        for (int i=0; i<tokenList.size(); i++) {
+            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+        }
+        Parser parser = new Parser(tokenList);
+        parser.lang();
+        assertEquals(tokenList.size(), parser.num);
+    }
+
+    @Test
+    public void print_stmt() {
+        Lexer lexer = new Lexer(testFolder + "printTest");
+        List<Token> tokenList = lexer.getAllTokens();
+        assertFalse(tokenList.isEmpty());
+        for (int i=0; i<tokenList.size(); i++) {
+            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+        }
+        Parser parser = new Parser(tokenList);
+        assertTrue(parser.print_stmt());
+    }
+
+    @Test
     public void assign_stmt() {
         Lexer lexer = new Lexer(testFolder + "typesTest");
         List<Token> tokenList = lexer.getAllTokens();

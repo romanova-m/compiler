@@ -15,8 +15,7 @@ public class Parser {
     }
 
     public void lang() {
-        while (true) {
-            expr();
+        while (expr()) {
         }
     }
 
@@ -29,6 +28,7 @@ public class Parser {
         return false;
     }
 
+
     public boolean declar_stmt() {
         int begNum = num;
         if (TYPE() && VAR() && SEMI()) {
@@ -40,7 +40,7 @@ public class Parser {
 
     public boolean assign_stmt() {
         int begNum = num;
-        if (VAR() && ASSIGN_OP() && value_stmt()) {
+        if (VAR() && ASSIGN_OP() && (value_stmt() || STRING())) {
             return true;
         }
         num = begNum;
@@ -50,10 +50,8 @@ public class Parser {
     public boolean while_stmt() {
         int begNum = num;
         if (WHILE() && condition() && DO()) {
-            int cycleNum = begNum;
-            while (true) {
-                if (expr()) cycleNum = num;
-                else break;
+            int cycleNum = num;
+            while (expr()) {
             }
             if (cycleNum == begNum) {
                 num = begNum;
@@ -112,7 +110,26 @@ public class Parser {
     }
 
     public boolean print_stmt() {
+        int begNum = num;
+        if (PRINT() && (STRING() || value_stmt())) {
+            while (COMMA() && (STRING() || value_stmt())) {
+            }
+            if (SEMI()) return true;
+        }
+        num = begNum;
         return false;
+    }
+
+    public boolean COMMA() {
+        return checkToken("COMMA");
+    }
+
+    public boolean PRINT() {
+        return checkToken("PRINT");
+    }
+
+    public boolean STRING() {
+        return checkToken("STRING");
     }
 
     public boolean TYPE() {
@@ -182,7 +199,7 @@ public class Parser {
     //to add b_stmt
     public boolean value() {
         int begNum = num;
-        if (VAR() || num()) {
+        if (VAR() || num() || b_stmt()) {
             return true;
         }
         num = begNum;

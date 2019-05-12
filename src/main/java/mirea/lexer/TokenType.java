@@ -11,16 +11,18 @@ public enum TokenType {
     ASSIGN_OP ("="),
     L_B ("\\("),
     R_B ("\\)"),
+    COMMA(","),
     SEMI (";"),
     IF ("if"),
     WHILE ("while"),
     THEN ("then"),
     ELSE ("else"),
-    TYPE ("double|int|LinkedList|HashSet"),
+    PRINT ("print"),
+    TYPE ("(double|int|LinkedList|HashSet)"),
     VAR ("([a-zA-Z]|_)+\\w*"),
     DOUBLE ("(0|[1-9][0-9]*)\\.[0-9]+"), // ORDER IS IMPORTANT
     INT ("(0|[1-9][0-9]*)"),
-    STRING ("\".*\"");
+    STRING ("\"[^\"]*\"");
 
     private final Pattern pattern;
 
