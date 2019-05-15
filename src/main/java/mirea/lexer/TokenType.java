@@ -5,38 +5,25 @@ import java.util.regex.Pattern;
 
 public enum TokenType {
 
-    TK_MINUS ("-"),
-    TK_PLUS ("\\+"),
-    TK_MUL ("\\*"),
-    TK_DIV ("/"),
-    TK_NOT ("~"),
-    TK_AND ("&"),
-    TK_OR ("\\|"),
-    DIFFERENT ("<>"),
-    TK_LEG ("<="),
-    TK_LESS ("<"),
-    TK_GEQ (">="),
-    TK_GT (">"),
-    TK_EQ ("=="),
-    TK_ASSIGN ("="),
-    TK_OPEN ("\\("),
-    TK_CLOSE ("\\)"),
-    TK_SEMI (";"),
-    TK_COMMA (","),
-    TK_KEY_DEFINE ("define"),
-    TK_KEY_AS ("as"),
-    TK_KEY_IS ("is"),
-    TK_KEY_IF ("if"),
-    TK_KEY_THEN ("then"),
-    TK_KEY_ELSE ("else"),
-    TK_KEY_ENDIF ("endif"),
-    OPEN_BRACKET ("\\{"),
-    CLOSE_BRACKET ("\\}"),
+    OP ("^(\\-|\\+|\\*|\\/)"),
+    COMP_OP("(==|!=|<=|>=|<|>)"),
+    LOG_OP("\\&\\&|\\|\\|"),
+    ASSIGN_OP ("="),
+    L_B ("\\("),
+    R_B ("\\)"),
+    SEMI (";"),
+    IF ("if"),
+    WHILE ("while"),
+    THEN ("then"),
+    ELSE ("else"),
+    VAR ("([a-zA-Z]|_)+\\w*"),
+    NUM ("0|[1-9][0-9]*");
 
-    STRING ("\"[^\"]+\""),
+
+    /*STRING ("\"[^\"]+\""),
     FLOAT ("\\d+\\.\\d+"), // ORDER IS IMPORTANT
     INTEGER ("\\d+"),
-    IDENTIFIER ("\\w+");
+    IDENTIFIER ("\\w+");*/
 
     private final Pattern pattern;
 

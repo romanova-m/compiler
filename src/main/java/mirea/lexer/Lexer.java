@@ -111,6 +111,7 @@ public class Lexer {
     public boolean isExausthed() {
         return exausthed;
     }
+
     public List<Token> getAllTokens() {
         List<Token> allTokens = new ArrayList<>();
         while (!isExausthed()){
