@@ -51,7 +51,7 @@ public class Interpreter {
     private int popInt() {
          Token element = stack.pop();
         logger.finer("popped element of type " + element.getTokenType());
-         if (element.getTokenType().equals(TokenType.IDENTIFIER)){
+         if (element.getTokenType().equals(TokenType.VAR)){
              return (Integer) symbolTable.lookup(element.getLexema()).getValue();
          } else return intVal(element.getLexema());
     }
