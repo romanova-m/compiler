@@ -13,6 +13,12 @@ public class SymbolTable {
     ArrayList<HashMap<String, Record>> tables = new ArrayList<>();
     int position = -1;
 
+    /*
+     * Creating new scope on init, can be removed
+     */
+    SymbolTable(){
+        enterScope();
+    }
     /**
      * Increase nesting level
      */

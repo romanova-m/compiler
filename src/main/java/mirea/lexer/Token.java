@@ -24,4 +24,11 @@ public class Token {
     public void setTokenType(TokenType tokenType) {
         this.tokenType = tokenType;
     }
+
+    public static Token mkIntToken(int value){
+        return new Token(TokenType.INTEGER, String.valueOf(value));
+    }
+    public static Token mkVarToken(String value){
+        return new Token(TokenType.IDENTIFIER, value);
+    }
 }
