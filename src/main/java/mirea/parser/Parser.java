@@ -21,7 +21,7 @@ public class Parser {
 
     public boolean expr() {
         int begNum = num;
-        if (declar_stmt() || assign_stmt() || while_stmt() ||  if_stmt() || print_stmt()) {
+        if (declar_stmt() || assign_stmt() || while_stmt() ||  if_stmt() || objectOp_stmt() || print_stmt()) {
             return true;
         }
         num = begNum;
@@ -40,16 +40,59 @@ public class Parser {
 
     public boolean assign_stmt() {
         int begNum = num;
-        if (VAR() && ASSIGN_OP() && (value_stmt() || STRING())) {
+        if (VAR() && ASSIGN_OP() && (value_stmt() || STRING()) && SEMI()) {
             return true;
         }
         num = begNum;
         return false;
     }
 
+    public boolean objectOp_stmt() {
+        int begNum = num;
+        if ((objectOneArg() || objectOneArg() || objectPut()) && SEMI()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean objectOneArg() {
+        int begNum = num;
+        if (VAR() && DOT() && (ADD() || GET()) && value_stmt()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean objectPut() {
+        int begNum = num;
+        if (VAR() && DOT() && PUT() && value_stmt() && COMMA() && value_stmt()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean PUT() {
+        return checkToken("PUT");
+    }
+
+    public boolean ADD() {
+        return checkToken("ADD");
+    }
+
+    public boolean GET() {
+        return checkToken("GET");
+    }
+
+    public boolean DOT() {
+        return checkToken("DOT");
+    }
+
     public boolean while_stmt() {
         int begNum = num;
-        if (WHILE() && condition() && DO()) {
+        if (WHILE() && condition() && DO() && L_CB()) {
             int cycleNum = num;
             while (expr()) {
             }
@@ -57,39 +100,41 @@ public class Parser {
                 num = begNum;
                 return false;
             }
-            if (SEMI()) return true;
+            if (R_CB()) return true;
         }
         num = begNum;
         return false;
     }
 
+    public boolean L_CB() {
+        return checkToken("L_CB");
+    }
+
+    public boolean R_CB() {
+        return checkToken("R_CB");
+    }
+
     public boolean if_stmt() {
         int begNum = num;
-        if (IF() && condition() && THEN()) {
-            int cycleNum = begNum;
+        if (IF() && condition() && THEN() && L_CB()) {
+            int cycleNum = num;
             while(expr()) {
-                cycleNum = num;
             }
-            if (cycleNum == begNum) {
+            if (!R_CB()) {
                 num = begNum;
                 return false;
             }
-            if (ELSE()) {
+            if (ELSE() && L_CB()) {
                 while (expr()) {
                     cycleNum = num;
                 }
             }
             num = cycleNum;
-            if (SEMI()) return true;
+            if (R_CB()) return true;
         }
         num = begNum;
         return false;
     }
-
-    public boolean for_stmt () {
-        return false;
-    }
-
 
     public boolean DO() {
         return checkToken("DO");
@@ -111,10 +156,8 @@ public class Parser {
 
     public boolean print_stmt() {
         int begNum = num;
-        if (PRINT() && (STRING() || value_stmt())) {
-            while (COMMA() && (STRING() || value_stmt())) {
-            }
-            if (SEMI()) return true;
+        if (PRINT() && (STRING() || value_stmt()) && SEMI()) {
+            return true;
         }
         num = begNum;
         return false;
@@ -143,7 +186,6 @@ public class Parser {
     public boolean LOG_OP() {
         return checkToken("LOG_OP");
     }
-
 
     public boolean WHILE() {
         return checkToken(("WHILE"));
@@ -196,7 +238,6 @@ public class Parser {
         return false;
     }
 
-    //to add b_stmt
     public boolean value() {
         int begNum = num;
         if (VAR() || num() || b_stmt()) {
@@ -226,19 +267,19 @@ public class Parser {
 
     public boolean b_stmt() {
         int begNum = num;
-        if (L_B() && stmt() && R_B()) {
+        if (L_RB() && stmt() && R_RB()) {
             return true;
         }
         num = begNum;
         return false;
     }
 
-    public boolean L_B() {
-        return checkToken("L_B");
+    public boolean L_RB() {
+        return checkToken("L_RB");
     }
 
-    public boolean R_B() {
-        return checkToken("R_B");
+    public boolean R_RB() {
+        return checkToken("R_RB");
     }
 
     public boolean checkToken(String reqTokenTypeName) {

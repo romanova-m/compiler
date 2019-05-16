@@ -9,8 +9,14 @@ public enum TokenType {
     COMP_OP("(==|!=|<=|>=|<|>)"),
     LOG_OP("\\&\\&|\\|\\|"),
     ASSIGN_OP ("="),
-    L_B ("\\("),
-    R_B ("\\)"),
+    DOT ("\\."),
+    ADD ("add"),
+    GET ("get"),
+    PUT ("put"),
+    L_RB ("\\("),
+    R_RB ("\\)"),
+    L_CB ("\\{"),
+    R_CB ("\\}"),
     COMMA(","),
     SEMI (";"),
     IF ("if"),
@@ -18,9 +24,9 @@ public enum TokenType {
     THEN ("then"),
     ELSE ("else"),
     PRINT ("print"),
-    TYPE ("(double|int|LinkedList|HashSet)"),
+    TYPE ("(double|int|LinkedList|HashSet|String)"),
     VAR ("([a-zA-Z]|_)+\\w*"),
-    DOUBLE ("(0|[1-9][0-9]*)\\.[0-9]+"), // ORDER IS IMPORTANT
+    DOUBLE ("(0|[1-9][0-9]*)\\.[0-9]+"),
     INT ("(0|[1-9][0-9]*)"),
     STRING ("\"[^\"]*\"");
 

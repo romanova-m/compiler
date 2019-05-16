@@ -1,10 +1,15 @@
-a = 1.56
-a = 2
-a = "kjkj"
-print "grger", "efwef", 2+5*3, a;
+a = 1.56;
+a = 2;
+a = "kjkj";
+print a;
 if a+b == 5 && a>11
-then b = 2
-a = 4
-else a = (b+2)*2
-;
+then {
+b = 2;
+a = 4;
+}
+else {
+a = (b+2)*2;
+}
 LinkedList a;
+a.add b+5;
+a.put 5, 6;
