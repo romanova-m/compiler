@@ -1,0 +1,12 @@
+if a>5
+then {
+    if b < 2
+    then {
+    a = 5;
+    }
+x = 6;
+}
+else {
+b = 5;
+}
+
