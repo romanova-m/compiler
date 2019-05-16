@@ -26,9 +26,9 @@ public class Token {
     }
 
     public static Token mkIntToken(int value){
-        return new Token(TokenType.INTEGER, String.valueOf(value));
+        return new Token(TokenType.NUM, String.valueOf(value));
     }
     public static Token mkVarToken(String value){
-        return new Token(TokenType.IDENTIFIER, value);
+        return new Token(TokenType.VAR, value);
     }
 }
