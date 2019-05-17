@@ -44,8 +44,7 @@ public class RPN {
     public List<Element> elToInfix (List<Element> inp, List<Element> out, int beg) {
         Stack <Element> s = new Stack<>();
 
-        //Возвращаемый лист
-        String prevElType;
+        String prevElValue;
 
         for (i=beg; i<inp.size(); i++) {
 
@@ -58,8 +57,8 @@ public class RPN {
                     break;
 
                 case "OP":
-                    prevElType = inp.get(out.size()-1).getType();
-                    if ((prevElType.equals("L_B") || prevElType.equals("=")) && inp.get(i).getValue().equals("-")) {
+                    prevElValue = inp.get(i-1).getValue();
+                    if ((prevElValue.equals("(") || prevElValue.equals("=")) && inp.get(i).getValue().equals("-")) {
                         out.add(new Element("INT", "0"));
                     }
                     if (!s.isEmpty()) {

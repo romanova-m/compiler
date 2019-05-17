@@ -1,4 +1,9 @@
-while a > 5 do {
-b = a+3;
-a = -1;
+while (a > 5) do {
+if a > 3 then {
+a = a +1;
+}
+else {
+a = a + 2;
+}
+a = 1;
 }
