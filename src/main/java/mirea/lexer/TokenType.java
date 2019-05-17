@@ -21,6 +21,7 @@ public enum TokenType {
     SEMI (";"),
     IF ("if"),
     WHILE ("while"),
+    DO ("do"),
     THEN ("then"),
     ELSE ("else"),
     PRINT ("print"),

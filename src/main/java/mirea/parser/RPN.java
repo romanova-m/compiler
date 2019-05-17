@@ -24,9 +24,6 @@ public class RPN {
                 case "ASSIGN_OP":
                     out.add(new Element("OP", tokenList.get(i).getLexema()));
                     break;
-                case "COMP_OP":
-                    out.add(new Element("OP", tokenList.get(i).getLexema()));
-                    break;
                 case "ADD":
                     out.add(new Element("OP", tokenList.get(i).getLexema()));
                     break;
@@ -78,7 +75,6 @@ public class RPN {
                             out.add(s.pop());
                         }
                     }
-
                     s.add(inp.get(i));
                     break;
                 case "DOUBLE":
@@ -110,6 +106,14 @@ public class RPN {
                     return out;
                 case "ELSE":
                     return out;
+                case "WHILE":
+                    out = whileRPN(inp, out);
+                    break;
+                case "DO":
+                    while (!s.isEmpty()) {
+                        out.add(s.pop());
+                    }
+                    return out;
                 case "L_CB":
                     return out;
                 case "R_CB":
@@ -138,10 +142,9 @@ public class RPN {
 
     public List<Element> ifRPN (List<Element> inp, List<Element> out) {
 
-        int elseBeg = -1;
-        int bodyEndRef = -1;
-        int ifEndRef = -1;
-
+        int elseBeg = -1; //Номер начала тела else в листе
+        int thenEndRef = -1; //Номер указателя на конец условной конструкции в листе (если есть else)
+        int ifEndRef; //Номер указателя на начало тела else в листе
 
         out = elToInfix(inp, out, i+1);
         if (inp.get(i).getType().equals("THEN")) {
@@ -151,19 +154,40 @@ public class RPN {
             out = elToInfix(inp, out, i+2);
             if (inp.get(i).getType().equals("ELSE")) {
                 out.add(ref());
-                bodyEndRef = out.size() - 1;
+                thenEndRef = out.size() - 1;
                 out.add(trans());
                 elseBeg = out.size();
                 out = elToInfix(inp, out, i+2);
             }
-            if (bodyEndRef != -1) {
+            if (thenEndRef != -1) {
                 out.set(ifEndRef, new Element("REF", elseBeg + ""));
-                out.set(bodyEndRef, new Element("REF", out.size() + ""));
+                out.set(thenEndRef, new Element("REF", out.size() + ""));
             } else {
                 out.set(ifEndRef, new Element("REF", out.size() + ""));
             }
 
         }
+        return out;
+    }
+
+    public List<Element> whileRPN(List<Element> inp, List<Element> out) {
+
+        int condEndRef = -1;
+        int end = -1;
+        int condBeg;
+
+        condBeg = out.size();
+        out = elToInfix(inp, out, i+1);
+        //Текущий элемент inp - DO
+        out.add(ref());
+        condEndRef = out.size()-1;
+        out.add(transFalse());
+        out = elToInfix(inp, out, i+2);
+        //Текущий элемент - }
+        out.add(new Element("REF", condBeg+""));
+        out.add(trans());
+        end = out.size();
+        out.set(condEndRef, new Element("REF", end+""));
         return out;
     }
 

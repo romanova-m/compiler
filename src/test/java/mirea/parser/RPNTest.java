@@ -13,13 +13,13 @@ public class RPNTest {
     private String testFolder = "test_files/";
 
     @Test
-    public void toInfix() {
-        Lexer lexer = new Lexer(testFolder + "infixOpTest");
+    public void PRN() {
+        Lexer lexer = new Lexer(testFolder + "whileTest");
         List<Token> tokenList = lexer.getAllTokens();
         RPN rpn = new RPN(tokenList);
         List<Element> out = rpn.toInfix();
         for (int i=0; i<out.size(); i++) {
-            System.out.println(out.get(i).getValue());
+            System.out.printf("%d: %s\n", i, out.get(i).getValue());
         }
     }
 }
