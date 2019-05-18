@@ -32,7 +32,7 @@ public class InterpreterTest {
 
             @Override
             public String getValue() {
-                return "int";
+                return "INT";
             }
         });
         inp.add(new InpInterface() {
@@ -212,6 +212,92 @@ public class InterpreterTest {
     }
 
     @Test
+    public void count2() throws Exception {
+        Interpreter interpreter = new Interpreter();
+        List<InpInterface> inp = new ArrayList<>();
+        inp.add(new InpInterface() {
+
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "0";
+            }
+        });
+        inp.add(new InpInterface() {
+
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "5";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "!F";
+            }
+
+            @Override
+            public String getValue() {
+                return "!F";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "3";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "print";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "4";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "print";
+            }
+        });
+        interpreter.count(inp);
+    }
+
+    @Test
     public void countDiv() throws Exception {
         Interpreter interpreter = new Interpreter();
         List<InpInterface> inp = new ArrayList<>();
@@ -249,5 +335,45 @@ public class InterpreterTest {
             }
         });
         assertEquals("3.0", interpreter.count(inp));
+    }
+
+    @Test
+    public void countSum() throws Exception {
+        Interpreter interpreter = new Interpreter();
+        List<InpInterface> inp = new ArrayList<>();
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "DOUBLE";
+            }
+
+            @Override
+            public String getValue() {
+                return "6.0";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "DOUBLE";
+            }
+
+            @Override
+            public String getValue() {
+                return "2.0";
+            }
+        });
+        inp.add(new InpInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "+";
+            }
+        });
+        assertEquals("8.0", interpreter.count(inp));
     }
 }
