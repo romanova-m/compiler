@@ -1,15 +1,12 @@
-a = 1.56;
-a = 2;
-a = "kjkj";
 print a;
-if a+b == 5 && a>11
+if a>5 && a<11
 then {
-b = 2;
-a = 4;
+while a > 5 do {
+a.put 4,5;
+List b;
+}
+b.get (6+3);
 }
 else {
-a = (b+2)*2;
+List a;
 }
-LinkedList a;
-a.add b+5;
-a.put 5, 6;
