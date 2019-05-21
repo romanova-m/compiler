@@ -48,7 +48,7 @@ public class Interpreter {
      * @return result of calculations
      * @throws Exception if type problems found
      */
-    public String count(List<ElementInterface> elements) throws Exception {
+    public String count(List<? extends ElementInterface> elements) throws Exception {
          for (int i = 0; i < elements.size(); i++) {
              ElementInterface element = elements.get(i);
              logger.info("On element " + i + ", type: " + element.getType() +

@@ -365,7 +365,7 @@ public class Parser {
                 s.add(curToken);
                 break;
             case "ASSIGN_OP":
-                out.set(out.size() - 1, new Element("AD", out.get(out.size() - 1).getValue()));
+                out.set(out.size() - 1, new Element("ADR", out.get(out.size() - 1).getValue()));
                 if (!s.isEmpty()) {
                     while (!s.isEmpty() && priority(inp.get(num)) <= priority(s.peek())) {
                         out.add(toElement(s.pop()));
@@ -376,7 +376,7 @@ public class Parser {
             case "GET":
             case "ADD":
             case "PUT":
-                out.set(out.size() - 1, new Element("AD", out.get(out.size() - 1).getValue()));
+                out.set(out.size() - 1, new Element("ADR", out.get(out.size() - 1).getValue()));
             case "TYPE":
             case "PRINT":
                 s.add(curToken);

@@ -1,8 +1,9 @@
 package mirea.parser;
 
+import mirea.interpreter.ElementInterface;
 import mirea.lexer.Token;
 
-public class Element {
+public class Element implements ElementInterface {
     String type;
     String value;
 
