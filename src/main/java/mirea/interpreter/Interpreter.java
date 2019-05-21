@@ -308,7 +308,7 @@ public class Interpreter {
             throw new InterpreterException("Variable " + destination.getValue()
                     + " is not defined in this scope.");
         }
-        if (!destRec.getType().equals(element.getType())){
+        if (!destRec.getType().toUpperCase().equals(element.getType())){
             logger.severe("Type mismatch [" + destRec.getType() + ", " + element.getType() + "]");
             throw new InterpreterException("Assigning type " + element.getType() + " to "
                     + destRec.getType());
