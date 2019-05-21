@@ -329,7 +329,10 @@ public class Parser {
             case "PUT":
             case "LOG_OP":
             case "COMP_OP":
+            case "PRINT":
                 return new Element("OP", token.getLexema());
+            case "TYPE":
+                return new Element("DEF", token.getLexema());
             default:
                 return new Element(token);
         }
@@ -389,6 +392,8 @@ public class Parser {
                 break;
             case "SEMI":
                 while (!s.isEmpty()) {
+                    if (s.peek().getTokenType().name().equals("TYPE") )
+                        out.set(out.size() -1, new Element("ADR", out.get(out.size()-1).getValue()));
                     out.add(toElement(s.pop()));
                 }
                 break;
