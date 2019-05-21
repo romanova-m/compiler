@@ -63,9 +63,9 @@ public class Parser {
                 while (expr()) {
                 }
                 if (R_CB()) {
-                    out.add(new Element("REF", condBeg + ""));
+                    out.add(new Element("INT", condBeg + ""));
                     out.add(new Element("TRANS", "!"));
-                    out.set(condEndRef, new Element("REF", out.size() + ""));
+                    out.set(condEndRef, new Element("INT", out.size() + ""));
                     return true;
                 }
             }
@@ -91,10 +91,10 @@ public class Parser {
             }
             if (R_CB()) {
                 if (elseBeg != -1) {
-                    out.set(ifEndRef, new Element("REF", elseBeg + ""));
-                    out.set(thenEndRef, new Element("REF", out.size() + ""));
+                    out.set(ifEndRef, new Element("INT", elseBeg + ""));
+                    out.set(thenEndRef, new Element("INT", out.size() + ""));
                 } else {
-                    out.set(ifEndRef, new Element("REF", out.size() + ""));
+                    out.set(ifEndRef, new Element("INT", out.size() + ""));
                 }
                 return true;
             }
@@ -395,11 +395,11 @@ public class Parser {
                 while (!s.isEmpty()) {
                     out.add(toElement(s.pop()));
                 }
-                out.add(new Element("REF", "NULL"));
+                out.add(new Element());
                 out.add(new Element("TRANS", "!F"));
                 break;
             case "ELSE":
-                out.add(new Element("REF", "NULL"));
+                out.add(new Element());
                 out.add(new Element("TRANS", "!"));
                 break;
             case "R_CB":

@@ -16,6 +16,9 @@ public class Element {
         this.value = token.getLexema();
     }
 
+    public Element() {
+    }
+
     public String getType() {
         return type;
     }
