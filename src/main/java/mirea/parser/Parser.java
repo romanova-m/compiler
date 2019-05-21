@@ -327,6 +327,8 @@ public class Parser {
             case "ADD":
             case "GET":
             case "PUT":
+            case "LOG_OP":
+            case "COMP_OP":
                 return new Element("OP", token.getLexema());
             default:
                 return new Element(token);
