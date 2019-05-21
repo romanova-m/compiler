@@ -1,5 +1,9 @@
 package mirea.interpreter;
 
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -25,6 +29,18 @@ public class Interpreter {
     private final String TRF_TYPE = "!F";
     private final String LB_TYPE = "(";
     private final String RB_TYPE = ")";
+
+    /* Перенаправляет стандартный поток вывода в filename */
+    Interpreter(String filename){
+        try {
+            System.setOut(new PrintStream(filename));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    Interpreter(){
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+    }
 
     /**
      * Method takes RPN List as argument and returns string result of calculations.
@@ -86,7 +102,9 @@ public class Interpreter {
             case "add":     addEl( stack.pop(), stack.pop()); break;
             case "get":     getEl( stack.pop(), stack.pop()); break;
             case "put":     putEl( stack.pop(), stack.pop(), stack.pop()); break;
-            case "print":   System.out.println("Program says: " + stack.pop().getValue() + "\n"); break;
+
+            case "print":   System.out.print("" + stack.pop().getValue()); break;
+            case "println": System.out.println("" + stack.pop().getValue()); break;
             default:        logger.warning("Operator " + value + " not supported");
         }
     }
