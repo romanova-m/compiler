@@ -6,6 +6,7 @@ import java.util.HashMap;
 /**
  * Symbol table with basic operations
  * Holds object - List of HashMap with Records
+ *
  * @see Record
  */
 public class SymbolTable {

@@ -12,11 +12,11 @@ public class InterpreterTest {
     @Test
     public void count() throws Exception {
         Interpreter interpreter = new Interpreter();
-        List<InpInterface> inp = new ArrayList<>();
-        inp.add(new InpInterface() {
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "VAR";
+                return "ADR";
             }
 
             @Override
@@ -24,7 +24,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DEF";
@@ -35,10 +35,10 @@ public class InterpreterTest {
                 return "INT";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "VAR";
+                return "ADR";
             }
 
             @Override
@@ -46,7 +46,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -57,7 +57,7 @@ public class InterpreterTest {
                 return "2";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -68,7 +68,7 @@ public class InterpreterTest {
                 return "=";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -79,7 +79,7 @@ public class InterpreterTest {
                 return "3";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "VAR";
@@ -90,7 +90,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -107,11 +107,11 @@ public class InterpreterTest {
     @Test
     public void count1() throws Exception {
         Interpreter interpreter = new Interpreter();
-        List<InpInterface> inp = new ArrayList<>();
-        inp.add(new InpInterface() {
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "VAR";
+                return "ADR";
             }
 
             @Override
@@ -119,7 +119,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DEF";
@@ -130,10 +130,10 @@ public class InterpreterTest {
                 return "List";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "VAR";
+                return "ADR";
             }
 
             @Override
@@ -141,7 +141,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -152,7 +152,7 @@ public class InterpreterTest {
                 return "2";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -163,10 +163,10 @@ public class InterpreterTest {
                 return "add";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "VAR";
+                return "ADR";
             }
 
             @Override
@@ -174,7 +174,7 @@ public class InterpreterTest {
                 return "a";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -185,7 +185,7 @@ public class InterpreterTest {
                 return "0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -196,7 +196,7 @@ public class InterpreterTest {
                 return "get";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -214,8 +214,8 @@ public class InterpreterTest {
     @Test
     public void count2() throws Exception {
         Interpreter interpreter = new Interpreter();
-        List<InpInterface> inp = new ArrayList<>();
-        inp.add(new InpInterface() {
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
 
             @Override
             public String getType() {
@@ -227,7 +227,7 @@ public class InterpreterTest {
                 return "0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
 
             @Override
             public String getType() {
@@ -239,7 +239,7 @@ public class InterpreterTest {
                 return "5";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "!F";
@@ -250,7 +250,7 @@ public class InterpreterTest {
                 return "!F";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -261,7 +261,7 @@ public class InterpreterTest {
                 return "3";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -272,7 +272,7 @@ public class InterpreterTest {
                 return "print";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "INT";
@@ -283,7 +283,7 @@ public class InterpreterTest {
                 return "4";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -298,10 +298,201 @@ public class InterpreterTest {
     }
 
     @Test
+    public void count3() throws Exception {
+        Interpreter interpreter = new Interpreter();
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DEF";
+            }
+
+            @Override
+            public String getValue() {
+                return "DOUBLE";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "b";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DEF";
+            }
+
+            @Override
+            public String getValue() {
+                return "DOUBLE";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DOUBLE";
+            }
+
+            @Override
+            public String getValue() {
+                return "9.0";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "=";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "b";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DOUBLE";
+            }
+
+            @Override
+            public String getValue() {
+                return "3.0";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "=";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "VAR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "VAR";
+            }
+
+            @Override
+            public String getValue() {
+                return "b";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "/";
+            }
+        });
+        assertEquals("3.0", interpreter.count(inp));
+    }
+
+    @Test
+    public void count4() throws Exception {
+        Interpreter interpreter = new Interpreter();
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "1";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "INT";
+            }
+
+            @Override
+            public String getValue() {
+                return "0";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "||";
+            }
+        });
+
+        assertEquals("0", interpreter.count(inp));
+    }
+
+    @Test
     public void countDiv() throws Exception {
         Interpreter interpreter = new Interpreter();
-        List<InpInterface> inp = new ArrayList<>();
-        inp.add(new InpInterface() {
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DOUBLE";
@@ -312,7 +503,7 @@ public class InterpreterTest {
                 return "6.0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DOUBLE";
@@ -323,7 +514,7 @@ public class InterpreterTest {
                 return "2.0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -340,8 +531,8 @@ public class InterpreterTest {
     @Test
     public void countSum() throws Exception {
         Interpreter interpreter = new Interpreter();
-        List<InpInterface> inp = new ArrayList<>();
-        inp.add(new InpInterface() {
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DOUBLE";
@@ -352,7 +543,7 @@ public class InterpreterTest {
                 return "6.0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "DOUBLE";
@@ -363,7 +554,7 @@ public class InterpreterTest {
                 return "2.0";
             }
         });
-        inp.add(new InpInterface() {
+        inp.add(new ElementInterface() {
             @Override
             public String getType() {
                 return "OP";
@@ -375,5 +566,186 @@ public class InterpreterTest {
             }
         });
         assertEquals("8.0", interpreter.count(inp));
+    }
+
+    @Test
+    public void scopesTest() throws Exception {
+        Interpreter interpreter = new Interpreter();
+        List<ElementInterface> inp = new ArrayList<>();
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DEF";
+            }
+
+            @Override
+            public String getValue() {
+                return "STRING";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "STRING";
+            }
+
+            @Override
+            public String getValue() {
+                return "Hello from outer scope";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "=";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "(";
+            }
+
+            @Override
+            public String getValue() {
+                return "(";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "DEF";
+            }
+
+            @Override
+            public String getValue() {
+                return "STRING";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "ADR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "STRING";
+            }
+
+            @Override
+            public String getValue() {
+                return "Hello from inner scope";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "=";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "VAR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "print";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return ")";
+            }
+
+            @Override
+            public String getValue() {
+                return ")";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "VAR";
+            }
+
+            @Override
+            public String getValue() {
+                return "a";
+            }
+        });
+        inp.add(new ElementInterface() {
+            @Override
+            public String getType() {
+                return "OP";
+            }
+
+            @Override
+            public String getValue() {
+                return "print";
+            }
+        });
+        interpreter.count(inp);
     }
 }

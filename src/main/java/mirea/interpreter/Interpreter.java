@@ -3,44 +3,61 @@ package mirea.interpreter;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * Class to process and evaluate Parser output.
+ */
 public class Interpreter {
 
-    LinkedList<InpInterface> stack = new LinkedList<>();
-    SymbolTable symbolTable = new SymbolTable();
-    Logger logger = Logger.getLogger(Interpreter.class.getName());
+    private LinkedList<ElementInterface> stack = new LinkedList<>();
+    private SymbolTable symbolTable = new SymbolTable();
+    private Logger logger = Logger.getLogger(Interpreter.class.getName());
 
     private final String INT_TYPE = "INT";
     private final String DOUBLE_TYPE = "DOUBLE";
     private final String STRING_TYPE = "STRING";
     private final String LIST_TYPE = "List";
     private final String MAP_TYPE = "Map";
-
     private final String OP_TYPE = "OP";
+    private final String ADR_TYPE = "ADR";
     private final String VAR_TYPE = "VAR";
     private final String DEF_TYPE = "DEF";
     private final String TR_TYPE = "!";
     private final String TRF_TYPE = "!F";
+    private final String LB_TYPE = "(";
+    private final String RB_TYPE = ")";
 
-    public String count(List<InpInterface> input) throws Exception {
-         for (int i = 0; i < input.size(); i++) {
-             logger.info("On element " + i);
-             InpInterface record = input.get(i);
-             switch (record.getType()) {
+    /**
+     * Method takes RPN List as argument and returns string result of calculations.
+     * @param elements RPN in List
+     * @return result of calculations
+     * @throws Exception if type problems found
+     */
+    public String count(List<ElementInterface> elements) throws Exception {
+         for (int i = 0; i < elements.size(); i++) {
+             ElementInterface element = elements.get(i);
+             logger.info("On element " + i + ", type: " + element.getType() +
+                     ", value: " + element.getValue());
+             switch (element.getType()) {
                  /* Обработка операторов(вычисления) */
-                 case OP_TYPE:      processOp(record.getValue()); break;
+                 case OP_TYPE:      processOp(element.getValue()); break;
+                 /* Области видимости */
+                 case LB_TYPE: symbolTable.enterScope(); break;
+                 case RB_TYPE:  symbolTable.exitScope(); break;
                  /* Обработка операндов(положить в стек) */
-                 case INT_TYPE:     stack.push(record); break;
-                 case DOUBLE_TYPE:  stack.push(record); break;
-                 case STRING_TYPE:  stack.push(record); break;
-                 case VAR_TYPE:     stack.push(record); break;
+                 case INT_TYPE:     stack.push(element); break;
+                 case DOUBLE_TYPE:  stack.push(element); break;
+                 case STRING_TYPE:  stack.push(element); break;
+                 case ADR_TYPE:     stack.push(element); break;
+                 case VAR_TYPE:     stack.push(getSymData(element)); break;
                  /* Объявления переменных */
-                 case DEF_TYPE:     insertSym(stack.pop().getValue(), record.getValue()); break;
+                 case DEF_TYPE:     insertSym(stack.pop().getValue(), element.getValue()); break;
                  /* Безусловный переход */
-                 case TR_TYPE: i = intVal(stack.pop().getValue()) - 1; break;
+                 case TR_TYPE:      i = intVal(stack.pop().getValue()) - 1; break;
                  /* Переход по лжи */
                  case TRF_TYPE:
                      int index = intVal(stack.pop().getValue()) - 1;
                      if (!isTrue(stack.pop())) i = index; break;
+                 default: logger.severe("Unsupported type: " + element.getType());
              }
              logger.info("Stack: " + strVal(stack));
          }
@@ -49,12 +66,23 @@ public class Interpreter {
 
     private void processOp(String value) throws Exception {
         switch (value){
-            /* Default operations */
             case "+":       stack.push( sum(stack.pop(), stack.pop())); break;
             case "-":       stack.push( dif(stack.pop(), stack.pop())); break;
             case "*":       stack.push( mul(stack.pop(), stack.pop())); break;
             case "/":       stack.push( div(stack.pop(), stack.pop())); break;
+
+            case "<":       stack.push(isLess(stack.pop(), stack.pop())); break;
+            case ">":       stack.push(isBigger(stack.pop(), stack.pop())); break;
+            case ">=":      stack.push(isBiggerOrEq(stack.pop(), stack.pop())); break;
+            case "<=":      stack.push(isLessOrEq(stack.pop(), stack.pop())); break;
+            case "==":      stack.push(isEq(stack.pop(), stack.pop())); break;
+            case "!=":      stack.push(isNotEq(stack.pop(), stack.pop())); break;
+
+            case "&&":      stack.push(conj(stack.pop(), stack.pop())); break;
+            case "||":      stack.push(disj(stack.pop(), stack.pop())); break;
+
             case "=":       assignVal( stack.pop(), stack.pop()); break;
+
             case "add":     addEl( stack.pop(), stack.pop()); break;
             case "get":     getEl( stack.pop(), stack.pop()); break;
             case "put":     putEl( stack.pop(), stack.pop(), stack.pop()); break;
@@ -63,28 +91,109 @@ public class Interpreter {
         }
     }
 
+    private ElementInterface disj(ElementInterface arg2, ElementInterface arg1) {
+        return mkElement(INT_TYPE, bToI(
+                iToB(intVal(arg1.getValue())) || iToB(intVal(arg2.getValue()))).toString());
+    }
+
+    private ElementInterface conj(ElementInterface arg2, ElementInterface arg1) {
+        return mkElement(INT_TYPE, bToI(
+                iToB(intVal(arg1.getValue())) && iToB(intVal(arg2.getValue()))).toString());
+    }
+
+    private ElementInterface isNotEq(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) != 0).toString());
+    }
+
+    private ElementInterface isEq(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) == 0).toString());
+    }
+
+    private ElementInterface isLessOrEq(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) <= 0).toString());
+    }
+
+    private ElementInterface isBiggerOrEq(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) >= 0).toString());
+    }
+
+    private ElementInterface isBigger(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) > 0).toString());
+    }
+
+    private ElementInterface isLess(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
+        return mkElement(INT_TYPE, bToI(compareEl(arg1, arg2) < 0).toString());
+    }
+
+    private Integer bToI(Boolean b) {
+        return b? 0:1;
+    }
+
+    private Boolean iToB(Integer b) {
+        return b == 0;
+    }
 
     /**
-     * Counts sum of arg1 and arg2. Result type is defined by arg1 type.
-     * @param arg2 addend 2
-     * @param arg1 addend 1
-     * @throws Exception when arg1 type is not double or int
+     * Compares two elementInterface values
+     *
+     * @param arg1 of basic types
+     * @param arg2 of basic types
+     * @return for ints returns difference between elements.
+     * For doubles returns 0 if equals, 1 if bigger and -1 if less.
+     * For Strings returns standard String.compareTo().
+     * @throws InterpreterException when wrong types
+     * @see String
      */
-    private InpInterface sum(InpInterface arg2, InpInterface arg1) throws Exception{
-        arg1 = getSymData(arg1); arg2 = getSymData(arg2);
+    private int compareEl(ElementInterface arg1, ElementInterface arg2) throws InterpreterException {
         if (!arg1.getType().equals(arg2.getType()))
             logger.warning("Types mismatch(" + arg1.getType() + "+" + arg2.getType() +
                     "): consider reviewing your code");
         switch (arg1.getType()) {
             case INT_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return intVal(arg1.getValue()) - intVal(arg2.getValue());
+            case DOUBLE_TYPE:
+                double res = doubleVal(arg1.getValue()) - doubleVal(arg2.getValue());
+                if (res > 0) return 1;
+                else if (res == 0) return 0;
+                else return -1;
+            case STRING_TYPE:
+                return arg1.getValue().compareTo(arg2.getValue());
+            default:
+                logger.severe("Can not compare type " + arg1.getType());
+                throw new InterpreterException("Comparison of type " + arg1.getType() +
+                        " is not supported");
+        }
+    }
+
+
+    /**
+     * Counts sum of arg1 and arg2. Result type is defined by arg1 type.
+     *
+     * @param arg2 addend 2
+     * @param arg1 addend 1
+     * @throws InterpreterException when arg1 type is not double or int
+     */
+    private ElementInterface sum(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException{
+        if (!arg1.getType().equals(arg2.getType()))
+            logger.warning("Types mismatch(" + arg1.getType() + "+" + arg2.getType() +
+                    "): consider reviewing your code");
+        switch (arg1.getType()) {
+            case INT_TYPE:
+                return mkElement(arg1.getType(), String.valueOf(
                         intVal(arg1.getValue()) + intVal(arg2.getValue())));
             case DOUBLE_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         doubleVal(arg1.getValue()) + doubleVal(arg2.getValue())));
             default:
                 logger.severe("Can not sum type " + arg1.getType());
-                throw new Exception("SUM OF TYPE " + arg1.getType() + " IS NOT SUPPORTED");
+                throw new InterpreterException("SUM OF TYPE " + arg1.getType() + " IS NOT SUPPORTED");
         }
     }
 
@@ -92,23 +201,24 @@ public class Interpreter {
      * Counts multiplication of arg1 and arg2. Result type is defined by arg1 type.
      * @param arg2 multiplier 2
      * @param arg1 multiplier 1
-     * @throws Exception when arg1 type is not double or int
+     * @throws InterpreterException when arg1 type is not double or int
      */
-    private InpInterface mul(InpInterface arg2, InpInterface arg1) throws Exception{
-        arg1 = getSymData(arg1); arg2 = getSymData(arg2);
+    private ElementInterface mul(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException{
         if (!arg1.getType().equals(arg2.getType()))
             logger.warning("Types mismatch(" + arg1.getType() + "*" + arg2.getType() +
                     "): consider reviewing your code");
         switch (arg1.getType()) {
             case INT_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         intVal(arg1.getValue()) * intVal(arg2.getValue())));
             case DOUBLE_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         doubleVal(arg1.getValue()) * doubleVal(arg2.getValue())));
             default:
                 logger.severe("Can not multiply type " + arg1.getType());
-                throw new Exception("MULTIPLY OF TYPE " + arg1.getType() + " IS NOT SUPPORTED");
+                throw new InterpreterException("MULTIPLY OF TYPE " + arg1.getType() +
+                        " IS NOT SUPPORTED");
         }
     }
 
@@ -116,23 +226,24 @@ public class Interpreter {
      * Counts difference of arg1 and arg2. Result type is defined by arg1 type.
      * @param arg2 subtrahend
      * @param arg1 minuend
-     * @throws Exception when arg1 type is not double or int
+     * @throws InterpreterException when arg1 type is not double or int
      */
-    private InpInterface dif(InpInterface arg2, InpInterface arg1) throws Exception{
-        arg1 = getSymData(arg1); arg2 = getSymData(arg2);
+    private ElementInterface dif(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException{
         if (!arg1.getType().equals(arg2.getType()))
             logger.warning("Types mismatch(" + arg1.getType() + "-" + arg2.getType() +
                     "): consider reviewing your code");
         switch (arg1.getType()) {
             case INT_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         intVal(arg1.getValue()) - intVal(arg2.getValue())));
             case DOUBLE_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         doubleVal(arg1.getValue()) - doubleVal(arg2.getValue())));
             default:
                 logger.severe("Can not subtract type " + arg1.getType());
-                throw new Exception("DIFFERENCE OF TYPE " + arg1.getType() + " IS NOT SUPPORTED");
+                throw new InterpreterException("DIFFERENCE OF TYPE " + arg1.getType() +
+                        " IS NOT SUPPORTED");
         }
     }
 
@@ -140,83 +251,85 @@ public class Interpreter {
      * Divides arg1 by arg2. Result type is defined by arg1 type.
      * @param arg2 divider
      * @param arg1 dividend
-     * @throws Exception when arg1 type is not double or int
+     * @throws InterpreterException when arg1 type is not double or int
      */
-    private InpInterface div(InpInterface arg2, InpInterface arg1) throws Exception {
-        arg1 = getSymData(arg1); arg2 = getSymData(arg2);
+    private ElementInterface div(ElementInterface arg2, ElementInterface arg1)
+            throws InterpreterException {
         if (!arg1.getType().equals(arg2.getType()))
             logger.warning("Types mismatch(" + arg1.getType() + "/" + arg2.getType() +
                     "): consider reviewing your code");
         switch (arg1.getType()) {
             case INT_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         intVal(arg1.getValue()) / intVal(arg2.getValue())));
             case DOUBLE_TYPE:
-                return mkInp(arg1.getType(), String.valueOf(
+                return mkElement(arg1.getType(), String.valueOf(
                         doubleVal(arg1.getValue()) / doubleVal(arg2.getValue())));
             default:
                 logger.severe("Can not divide type " + arg1.getType());
-                throw new Exception("DIVISION OF TYPE " + arg1.getType() + " IS NOT SUPPORTED");
+                throw new InterpreterException("DIVISION OF TYPE " + arg1.getType() +
+                        " IS NOT SUPPORTED");
         }
     }
 
     /**
      * Assigns specified value to destination variable
+     *
      * @param element var or const to be assigned
      * @param destination var where to put value
-     * @throws Exception when variable does not exist or destination is not variable.
+     * @throws InterpreterException when variable does not exist or destination is not variable.
      */
-    private void assignVal(InpInterface element, InpInterface destination) throws Exception {
-        element = getSymData(element);
-        if (!destination.getType().equals(VAR_TYPE)){
-            logger.severe("Assigning destination  \"" + destination.getValue() +
-                    "\" must be variable.");
-            throw new Exception("Assigning to " + destination.getValue() + " - not a variable.");
+    private void assignVal(ElementInterface element, ElementInterface destination)
+            throws InterpreterException {
+        if (!destination.getType().equals(ADR_TYPE)){
+            throw new InterpreterException("Assigning destination  \"" + destination.getValue() +
+                    "\" must be address.");
         }
         Record destRec = symbolTable.lookup(destination.getValue());
         if (destRec == null) {
-            logger.severe("Variable " + destination.getValue() + " does not exist");
-            throw new Exception("Variable " + destination.getValue() + " not defined in this scope.");
+            throw new InterpreterException("Variable " + destination.getValue()
+                    + " is not defined in this scope.");
         }
         if (!destRec.getType().equals(element.getType())){
             logger.severe("Type mismatch [" + destRec.getType() + ", " + element.getType() + "]");
-            throw new Exception("Assigning type " + element.getType() + " to " + destRec.getType());
+            throw new InterpreterException("Assigning type " + element.getType() + " to "
+                    + destRec.getType());
         }
         destRec.setValue(element.getValue());
     }
 
     /**
      * Adds element of type int to destination List
+     *
      * @param element element to add, should be INT_TYPE
      * @param destination destination List, type should match LIST_TYPE
-     * @throws Exception when element has wrong type
+     * @throws InterpreterException when wrong types
      */
-    private void addEl(InpInterface element, InpInterface destination) throws Exception {
-        element = getSymData(element);
+    private void addEl(ElementInterface element, ElementInterface destination)
+            throws InterpreterException {
         Record record = symbolTable.lookup(destination.getValue());
-        if (!element.getType().equals(INT_TYPE)) throw new Exception("Type mismatch");
-        if (record.getType().equals(LIST_TYPE)){
-            List<Integer> list = (LinkedList<Integer>) record.getValue();
-            list.add(intVal(element.getValue()));
-            logger.info("Put to " + destination.getValue() + " " + element);
+        if (!element.getType().equals(INT_TYPE)) {
+            throw new InterpreterException("Type mismatch: " + element.getType() + ", required: INT");
         }
-        else {
-            logger.warning("Trying to add to non-list element");
-            throw new Exception("Unsupported operation");
+
+        if (!record.getType().equals(LIST_TYPE)) {
+            throw new InterpreterException("Trying yo put to type " + record.getType());
         }
+        List<Integer> list = (LinkedList<Integer>) record.getValue();
+        list.add(intVal(element.getValue()));
+        logger.info("Put to " + destination.getValue() + " " + element);
     }
 
     /**
      * Gets element from Collection
+     *
      * @param index position of element, should be INT_TYPE
      * @param inp variable of LIST_TYPE or MAP_TYPE
-     * @throws Exception when index has wrong type
+     * @throws InterpreterException when inp not collection
      */
-    private void getEl(InpInterface index, InpInterface inp) throws Exception {
+    private void getEl(ElementInterface index, ElementInterface inp) throws InterpreterException {
         Record record = symbolTable.lookup(inp.getValue());
-        index = getSymData(index);
-        Integer val = null;
-        if (!index.getType().equals(INT_TYPE)) throw new Exception("Type mismatch");
+        Integer val;
         switch (record.getType()) {
             case LIST_TYPE:
                 List<Integer> list = (LinkedList<Integer>) record.getValue();
@@ -229,40 +342,41 @@ public class Interpreter {
                 logger.info("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
             default:
-                logger.warning("Trying to get from non-list element");
-                break;
+                throw new InterpreterException("Calling get on " + record.getType() + " variable.");
         }
-        if (val != null) stack.push(mkInp(INT_TYPE,val.toString()));
+        if (val != null) stack.push(mkElement(INT_TYPE, val.toString()));
     }
 
     /**
-     * Puts key-value pair to map
+     * Puts key-value pair to map INT-INT
+     *
      * @param val should be INT_TYPE
      * @param key should be INT_TYPE
      * @param inp should be MAP_TYPE
-     * @throws Exception when type is not map
+     * @throws InterpreterException when type other than map
      */
-    private void putEl(InpInterface val, InpInterface key, InpInterface inp) throws Exception {
-        val = getSymData(val); key = getSymData(key);
+    private void putEl(ElementInterface val, ElementInterface key, ElementInterface inp)
+            throws InterpreterException {
         Record record = symbolTable.lookup(inp.getValue());
-        if (record.getType().equals(MAP_TYPE)){
-            Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
-            map.put(intVal(key.getValue()), intVal(val.getValue()));
-            logger.info("Put to " + inp.getValue() +
-                    " [" + key.getValue() + "," + val.getValue() + "]");
+        if (!record.getType().equals(MAP_TYPE)) {
+            throw new InterpreterException("Trying putting to: " + record.getType() + ", required: MAP.");
         }
-        else {
-            logger.warning("Trying to pup to non-map element");
-            throw new Exception("Type mismatch");
-        }
+        Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
+        map.put(intVal(key.getValue()), intVal(val.getValue()));
+        logger.info("Put to " + inp.getValue() + " [" + key.getValue() + "," + val.getValue() + "]");
+
     }
 
-
-    private boolean isTrue(InpInterface pop) throws Exception {
-        pop = getSymData(pop);
+    /**
+     * Checks if condition is met.
+     *
+     * @param pop int element for check
+     * @return true if pop.value != 0 else false
+     * @throws InterpreterException when condition type is not int
+     */
+    private boolean isTrue(ElementInterface pop) throws InterpreterException {
         if (!pop.getType().equals(INT_TYPE)){
-            logger.severe("Conditions of " + pop.getType() + " type are not supported");
-            throw new Exception("Condition type " + pop.getType() + "not supported");
+            throw new InterpreterException("Condition type " + pop.getType() + "not supported");
         }
         return intVal(pop.getValue()) != 0;
     }
@@ -276,41 +390,52 @@ public class Interpreter {
     }
 
     /**
-     * Inserts symbol to symbol table when definition found.
-     * @param name string matching identifier pattern
-     * @param type one of language supported types
+     * Inserts symbol to symbol table when definition found, value is set to null for normal types.
+     * For types list and map value contains new instance.
+     *
+     * @param name identifier
+     * @param type one of supported types
+     * @throws InterpreterException when variable is already defined in scope
      */
-    private void insertSym(String name, String type) {
+    private void insertSym(String name, String type) throws InterpreterException {
+        if (symbolTable.localLookup(name) != null) {
+            throw new InterpreterException("Variable " + name + " is already defined in this scope.");
+        }
         Object value = null;
-         logger.warning("Symbol table insert symbol " + name + " type " + type);
-         if (type.equals(LIST_TYPE)) value = new LinkedList<Integer>(); // int list
-         if (type.equals(MAP_TYPE)) value = new HashMap<Integer, Integer>(); // int int map
+        logger.info("Symbol table insert symbol " + name + " type " + type);
+        if (type.equals(LIST_TYPE)) value = new LinkedList<Integer>(); // int list
+        if (type.equals(MAP_TYPE)) value = new HashMap<Integer, Integer>(); // int int map
         symbolTable.insertSymbol(new Record(name, value, type));
     }
 
     /**
-     * Receives value from symbol table variable
-     * @param inp element for converting
+     * Receives value for VAR_TYPE from a symbol table.
+     * This should not be called for Collection types.
+     *
+     * @param element variable to look for
      * @return actual value of the variable or initial element
+     * @throws InterpreterException when variable is not defined in scope
      */
-    private InpInterface getSymData(InpInterface inp) throws Exception {
-        if (!inp.getType().equals(VAR_TYPE)) return inp;
-        Record rec = symbolTable.lookup(inp.getValue());
+    private ElementInterface getSymData(ElementInterface element) throws InterpreterException {
+        Record rec = symbolTable.lookup(element.getValue());
         if (rec == null) {
-            logger.severe("Variable " + inp.getValue() + " does not exist");
-            throw new Exception("Variable " + inp.getValue() + " not defined in this scope.");
+            throw new InterpreterException("Variable " + element.getValue() +
+                    " not defined in this scope.");
         }
-        return mkInp(rec.getType(), rec.getValue().toString());
+        logger.info("Got value for " + element.getType() + " " + element.getValue() +
+                ": " + rec.getType() + " " + rec.getValue());
+        return mkElement(rec.getType(), rec.getValue().toString());
     }
 
     /**
-     * Creates object of InpInterface class with specified fields
+     * Creates object of ElementInterface class with the specified fields
+     *
      * @param type string value returned be getType()
      * @param value string value returned by getValue()
      * @return object with specified fields
      */
-    private InpInterface mkInp(String type, String value){
-         return new InpInterface() {
+    private ElementInterface mkElement(String type, String value){
+         return new ElementInterface() {
              @Override
              public String getType() {
                  return type;
@@ -324,10 +449,10 @@ public class Interpreter {
     }
 
     /* Makes string with stack values DEBUG-ONLY*/
-    private String strVal(LinkedList<InpInterface> stack) {
+    private String strVal(LinkedList<ElementInterface> stack) {
         StringBuilder stringBuilder = new StringBuilder("[ ");
-        for (InpInterface inp: stack) {
-            stringBuilder.append(inp.getValue() + " ");
+        for (ElementInterface inp: stack) {
+            stringBuilder.append(inp.getValue()).append(" ");
         }
         return stringBuilder.append("]").toString();
     }
