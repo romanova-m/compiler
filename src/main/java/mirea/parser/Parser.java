@@ -86,7 +86,7 @@ public class Parser {
             int cycleNum = num;
             if (R_CB() && ELSE() && L_CB()) {
                 thenEndRef = out.size() - 3;
-                elseBeg = out.size();
+                elseBeg = out.size()-1;
                 while (expr()) {
                 }
             }
