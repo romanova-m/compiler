@@ -17,19 +17,18 @@ m.put (c+4), (6+2);
 m.put (a.get 0) + b, (m.get 9);
 b = 3;
 c = 10;
-if ((b == 3 || c != 2) && c>4 && ((a.get 0)>2))
-then {
-int k;
-k = 0;
-while c > 2 do {
-print c;
-c = c - 1;
-k = k + 1;
-}
-print k;
+if ((b == 3 || c != 2) && c>4 && ((a.get 0)>2)) then {
+    int k;
+    k = 0;
+    while c > 2 do {
+        print c;
+        c = c - 1;
+        k = k + 1;
+    }
+    print k;
 }
 else {
-print b - c;
+    print b - c;
 }
 if (b > c)
 then {

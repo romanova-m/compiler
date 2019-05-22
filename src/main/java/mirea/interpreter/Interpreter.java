@@ -25,10 +25,10 @@ public class Interpreter {
     private final String ADR_TYPE = "ADR";
     private final String VAR_TYPE = "VAR";
     private final String DEF_TYPE = "DEF";
-    private final String TR_TYPE = "!";
-    private final String TRF_TYPE = "!F";
-    private final String LB_TYPE = "(";
-    private final String RB_TYPE = ")";
+    private final String TR_TYPE = "TRANS";
+    private final String TRF_TYPE = "TRANS";
+    private final String LB_TYPE = "L_CB";
+    private final String RB_TYPE = "R_CB";
 
     /* Перенаправляет стандартный поток вывода в filename */
     Interpreter(String filename){
@@ -49,7 +49,8 @@ public class Interpreter {
      * @throws Exception if type problems found
      */
     public String count(List<? extends ElementInterface> elements) throws Exception {
-         for (int i = 0; i < elements.size(); i++) {
+        brCheck(elements);// TO BE REMOVED
+        for (int i = 0; i < elements.size(); i++) {
              ElementInterface element = elements.get(i);
              logger.info("On element " + i + ", type: " + element.getType() +
                      ", value: " + element.getValue());
@@ -57,8 +58,12 @@ public class Interpreter {
                  /* Обработка операторов(вычисления) */
                  case OP_TYPE:      processOp(element.getValue()); break;
                  /* Области видимости */
-                 case LB_TYPE: symbolTable.enterScope(); break;
-                 case RB_TYPE:  symbolTable.exitScope(); break;
+                 case LB_TYPE: symbolTable.enterScope();
+                 logger.severe("Enter scope. Now " + symbolTable.position);
+                 break;
+                 case RB_TYPE:  symbolTable.exitScope();
+                 logger.severe("exit scope. Now " + symbolTable.position);
+                 break;
                  /* Обработка операндов(положить в стек) */
                  case INT_TYPE:     stack.push(element); break;
                  case DOUBLE_TYPE:  stack.push(element); break;
@@ -67,15 +72,19 @@ public class Interpreter {
                  case VAR_TYPE:     stack.push(getSymData(element)); break;
                  /* Объявления переменных */
                  case DEF_TYPE:     insertSym(stack.pop().getValue(), element.getValue()); break;
-                 /* Безусловный переход */
-                 case TR_TYPE:      i = intVal(stack.pop().getValue()) - 1; break;
-                 /* Переход по лжи */
-                 case TRF_TYPE:
-                     int index = intVal(stack.pop().getValue()) - 1;
-                     if (!isTrue(stack.pop())) i = index; break;
+                 /* Переходы */
+                 case TR_TYPE:
+                     /* Безусловный переход */
+                     if (element.getValue().equals("!")) i = intVal(stack.pop().getValue()) - 1;
+                     /* Переход по лжи */
+                     else {
+                         int index = intVal(stack.pop().getValue()) - 1;
+                         if (!isTrue(stack.pop())) i = index;
+                     }
+                     break;
                  default: logger.severe("Unsupported type: " + element.getType());
              }
-             logger.info("Stack: " + strVal(stack));
+             logger.fine("Stack: " + strVal(stack));
          }
          return stack.isEmpty() ? null : stack.pop().getValue();
      }
@@ -103,9 +112,9 @@ public class Interpreter {
             case "get":     getEl( stack.pop(), stack.pop()); break;
             case "put":     putEl( stack.pop(), stack.pop(), stack.pop()); break;
 
-            case "print":   System.out.print("" + stack.pop().getValue()); break;
+            case "print":   System.out.println("" + stack.pop().getValue()); break;
             case "println": System.out.println("" + stack.pop().getValue()); break;
-            default:        logger.warning("Operator " + value + " not supported");
+            default:        logger.severe("Operator " + value + " not supported");
         }
     }
 
@@ -335,7 +344,7 @@ public class Interpreter {
         }
         List<Integer> list = (LinkedList<Integer>) record.getValue();
         list.add(intVal(element.getValue()));
-        logger.info("Put to " + destination.getValue() + " " + element);
+        logger.fine("Put to " + destination.getValue() + " " + element);
     }
 
     /**
@@ -352,12 +361,12 @@ public class Interpreter {
             case LIST_TYPE:
                 List<Integer> list = (LinkedList<Integer>) record.getValue();
                 val = list.get(intVal(index.getValue()));
-                logger.info("Got " + inp.getValue() + "[" + index + "]=" + val);
+                logger.fine("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
             case MAP_TYPE:
                 Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
                 val = map.get(intVal(index.getValue()));
-                logger.info("Got " + inp.getValue() + "[" + index + "]=" + val);
+                logger.fine("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
             default:
                 throw new InterpreterException("Calling get on " + record.getType() + " variable.");
@@ -381,7 +390,7 @@ public class Interpreter {
         }
         Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
         map.put(intVal(key.getValue()), intVal(val.getValue()));
-        logger.info("Put to " + inp.getValue() + " [" + key.getValue() + "," + val.getValue() + "]");
+        logger.fine("Put to " + inp.getValue() + " [" + key.getValue() + "," + val.getValue() + "]");
 
     }
 
@@ -420,7 +429,7 @@ public class Interpreter {
             throw new InterpreterException("Variable " + name + " is already defined in this scope.");
         }
         Object value = null;
-        logger.info("Symbol table insert symbol " + name + " type " + type);
+        logger.fine("Symbol table insert symbol " + name + " type " + type);
         if (type.equals(LIST_TYPE)) value = new LinkedList<Integer>(); // int list
         if (type.equals(MAP_TYPE)) value = new HashMap<Integer, Integer>(); // int int map
         symbolTable.insertSymbol(new Record(name, value, type));
@@ -440,7 +449,7 @@ public class Interpreter {
             throw new InterpreterException("Variable " + element.getValue() +
                     " not defined in this scope.");
         }
-        logger.info("Got value for " + element.getType() + " " + element.getValue() +
+        logger.fine("Got value for " + element.getType() + " " + element.getValue() +
                 ": " + rec.getType() + " " + rec.getValue());
         return mkElement(rec.getType(), rec.getValue().toString());
     }
@@ -456,7 +465,7 @@ public class Interpreter {
          return new ElementInterface() {
              @Override
              public String getType() {
-                 return type;
+                 return type.toUpperCase();
              }
 
              @Override
@@ -473,5 +482,17 @@ public class Interpreter {
             stringBuilder.append(inp.getValue()).append(" ");
         }
         return stringBuilder.append("]").toString();
+    }
+
+    /* Debug-only */
+    private void brCheck(List<? extends ElementInterface> elements) throws InterpreterException {
+        int rCount = 0;
+        int lCount = 0;
+        for (ElementInterface element : elements) {
+            if (element.getType().equals(RB_TYPE)) rCount++;
+            if (element.getType().equals(LB_TYPE)) lCount++;
+        }
+        if (rCount != lCount) throw new InterpreterException("BRACES MISMATCH");
+        else logger.info("braces OK, left " + lCount +  " right " + rCount);
     }
 }
