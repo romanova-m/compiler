@@ -58,7 +58,7 @@ public class Parser {
         int condBeg;
         if (WHILE()) {
             condBeg = out.size();
-            if (condition() && DO() && L_CB()) {
+            if (condition_stmt() && DO() && L_CB()) {
                 condEndRef = out.size() - 3;
                 while (expr()) {
                 }
@@ -79,16 +79,18 @@ public class Parser {
         int ifEndRef = -1;
         int thenEndRef = -1;
         int begNum = num;
-        if (IF() && condition() && THEN() && L_CB()) {
+        if (IF() && condition_stmt() && THEN() && L_CB()) {
             ifEndRef = out.size() - 3;
             while (expr()) {
             }
+            int cycleNum = num;
             if (R_CB() && ELSE() && L_CB()) {
                 thenEndRef = out.size() - 3;
                 elseBeg = out.size();
                 while (expr()) {
                 }
             }
+            else num = cycleNum;
             if (R_CB()) {
                 if (elseBeg != -1) {
                     out.set(ifEndRef, new Element("INT", elseBeg + ""));
@@ -105,7 +107,7 @@ public class Parser {
 
     public boolean objectOp_stmt() {
         int begNum = num;
-        if ((objectOneArg() || objectPut()) && SEMI()) {
+        if ((objectAdd() || objectPut()) && SEMI()) {
             return true;
         }
         num = begNum;
@@ -132,8 +134,7 @@ public class Parser {
 
     public boolean stmt() {
         int begNum = num;
-        if (value()) {
-            int cycleNum = num;
+        if (objectGet() || value()) {
             while (OP() && value_stmt()) {
             }
             return true;
@@ -144,7 +145,9 @@ public class Parser {
 
     public boolean b_stmt() {
         int begNum = num;
-        if (L_RB() && stmt() && R_RB()) {
+        if (L_RB() && value_stmt() && R_RB()) {
+            while (OP() && value_stmt()) {
+            }
             return true;
         }
         num = begNum;
@@ -170,12 +173,42 @@ public class Parser {
         return false;
     }
 
+    public boolean condition_stmt() {
+        int begNum = num;
+        if ((condition()) || b_condition() || b_cond_stmt()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean b_cond_stmt() {
+        int begNum = num;
+        if (L_RB() && condition_stmt() && R_RB()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean b_condition() {
+        int begNum = num;
+        if (L_RB() && condition() && R_RB()) {
+            while (LOG_OP() && condition_stmt()) {
+            }
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
     public boolean condition() {
         int begNum = num;
+        int cycleNum = num;
         if (value_stmt() && COMP_OP() && value_stmt()) {
-            int cycleNum = num;
-            while (LOG_OP() && condition()) {
-                cycleNum = num;
+            cycleNum = num;
+            while (LOG_OP() && condition_stmt()) {
+            cycleNum = num;
             }
             num = cycleNum;
             return true;
@@ -184,9 +217,18 @@ public class Parser {
         return false;
     }
 
-    public boolean objectOneArg() {
+    public boolean objectGet() {
         int begNum = num;
-        if (VAR() && DOT() && (ADD() || GET()) && value_stmt()) {
+        if (VAR() && DOT() && GET() && value_stmt()) {
+            return true;
+        }
+        num = begNum;
+        return false;
+    }
+
+    public boolean objectAdd() {
+        int begNum = num;
+        if (VAR() && DOT() && ADD() && value_stmt()) {
             return true;
         }
         num = begNum;
@@ -309,8 +351,8 @@ public class Parser {
         if (curToken.getTokenType().name().equals(reqTokenTypeName)) {
             if (num > lastNumInPrefix) {
                 toReverseNot(curToken);
+                lastNumInPrefix++;
             }
-            lastNumInPrefix = num;
             return true;
         }
         num = begNum;
@@ -394,6 +436,11 @@ public class Parser {
                 while (!s.isEmpty()) {
                     if (s.peek().getTokenType().name().equals("TYPE") )
                         out.set(out.size() -1, new Element("ADR", out.get(out.size()-1).getValue()));
+                    out.add(toElement(s.pop()));
+                }
+                break;
+            case "COMMA":
+                while (!s.peek().getTokenType().name().equals("PUT")) {
                     out.add(toElement(s.pop()));
                 }
                 break;

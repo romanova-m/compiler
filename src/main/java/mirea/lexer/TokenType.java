@@ -7,7 +7,7 @@ public enum TokenType {
 
     OP ("^(\\-|\\+|\\*|\\/)"),
     COMP_OP("(==|!=|<=|>=|<|>)"),
-    LOG_OP("\\&\\&|\\|\\|"),
+    LOG_OP("(\\&\\&|\\|\\|)"),
     ASSIGN_OP ("="),
     DOT ("\\."),
     ADD ("add"),
