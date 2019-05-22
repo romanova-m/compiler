@@ -49,7 +49,6 @@ public class Interpreter {
      * @throws Exception if type problems found
      */
     public String count(List<? extends ElementInterface> elements) throws Exception {
-        brCheck(elements);// TO BE REMOVED
         for (int i = 0; i < elements.size(); i++) {
              ElementInterface element = elements.get(i);
              logger.info("On element " + i + ", type: " + element.getType() +
@@ -58,12 +57,8 @@ public class Interpreter {
                  /* Обработка операторов(вычисления) */
                  case OP_TYPE:      processOp(element.getValue()); break;
                  /* Области видимости */
-                 case LB_TYPE: symbolTable.enterScope();
-                 logger.severe("Enter scope. Now " + symbolTable.position);
-                 break;
-                 case RB_TYPE:  symbolTable.exitScope();
-                 logger.severe("exit scope. Now " + symbolTable.position);
-                 break;
+                 case LB_TYPE: symbolTable.enterScope(); break;
+                 case RB_TYPE:  symbolTable.exitScope(); break;
                  /* Обработка операндов(положить в стек) */
                  case INT_TYPE:     stack.push(element); break;
                  case DOUBLE_TYPE:  stack.push(element); break;
@@ -84,7 +79,7 @@ public class Interpreter {
                      break;
                  default: logger.severe("Unsupported type: " + element.getType());
              }
-             logger.fine("Stack: " + strVal(stack));
+             logger.info("Stack: " + strVal(stack));
          }
          return stack.isEmpty() ? null : stack.pop().getValue();
      }
@@ -357,6 +352,8 @@ public class Interpreter {
     private void getEl(ElementInterface index, ElementInterface inp) throws InterpreterException {
         Record record = symbolTable.lookup(inp.getValue());
         Integer val;
+        if (record == null) throw new InterpreterException("Variable " + inp.getValue() + " is not defined" +
+                " in this scope");
         switch (record.getType()) {
             case LIST_TYPE:
                 List<Integer> list = (LinkedList<Integer>) record.getValue();
@@ -405,7 +402,7 @@ public class Interpreter {
         if (!pop.getType().equals(INT_TYPE)){
             throw new InterpreterException("Condition type " + pop.getType() + "not supported");
         }
-        return intVal(pop.getValue()) != 0;
+        return intVal(pop.getValue()) == 0;
     }
 
     private int intVal(String s){
@@ -482,17 +479,5 @@ public class Interpreter {
             stringBuilder.append(inp.getValue()).append(" ");
         }
         return stringBuilder.append("]").toString();
-    }
-
-    /* Debug-only */
-    private void brCheck(List<? extends ElementInterface> elements) throws InterpreterException {
-        int rCount = 0;
-        int lCount = 0;
-        for (ElementInterface element : elements) {
-            if (element.getType().equals(RB_TYPE)) rCount++;
-            if (element.getType().equals(LB_TYPE)) lCount++;
-        }
-        if (rCount != lCount) throw new InterpreterException("BRACES MISMATCH");
-        else logger.info("braces OK, left " + lCount +  " right " + rCount);
     }
 }
