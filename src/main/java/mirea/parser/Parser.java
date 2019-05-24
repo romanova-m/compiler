@@ -378,6 +378,8 @@ public class Parser {
                 return new Element("OP", token.getValue());
             case "TYPE":
                 return new Element("DEF", token.getValue());
+            case "STRING":
+                return new Element("STRING", token.getValue().substring(1, token.getValue().length()-1));
             default:
                 return new Element(token);
         }
