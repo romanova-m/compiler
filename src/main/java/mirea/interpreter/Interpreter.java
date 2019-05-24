@@ -4,9 +4,11 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.*;
 import java.util.logging.Logger;
 
+import mirea.structures.CustomList;
 /**
  * Class to process and evaluate Parser output.
  */
@@ -326,7 +328,6 @@ class Interpreter {
      * @param destination destination List, type should match LIST_TYPE
      * @throws InterpreterException when wrong types
      */
-    @SuppressWarnings("unchecked")
     private void addEl(ElementInterface element, ElementInterface destination)
             throws InterpreterException {
         Record record = symbolTable.lookup(destination.getValue());
@@ -337,7 +338,7 @@ class Interpreter {
         if (!record.getType().equals(LIST_TYPE)) {
             throw new InterpreterException("Trying yo put to type " + record.getType());
         }
-        List<Integer> list = (LinkedList<Integer>) record.getValue();
+        @SuppressWarnings("unchecked")CustomList<Integer> list = (CustomList<Integer>) record.getValue();
         list.add(intVal(element.getValue()));
         logger.fine("Put to " + destination.getValue() + " " + element);
     }
@@ -356,7 +357,7 @@ class Interpreter {
                 " in this scope");
         switch (record.getType()) {
             case LIST_TYPE:
-                @SuppressWarnings("unchecked") List<Integer> list = (LinkedList<Integer>) record.getValue();
+                @SuppressWarnings("unchecked") CustomList<Integer> list = (CustomList<Integer>) record.getValue();
                 val = list.get(intVal(index.getValue()));
                 logger.fine("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
@@ -427,7 +428,7 @@ class Interpreter {
         }
         Object value = null;
         logger.fine("Symbol table insert symbol " + name + " type " + type);
-        if (type.equals(LIST_TYPE)) value = new LinkedList<Integer>(); // int list
+        if (type.equals(LIST_TYPE)) value = new CustomList<Integer>(); // int list
         if (type.equals(MAP_TYPE)) value = new HashMap<Integer, Integer>(); // int int map
         symbolTable.insertSymbol(new Record(name, value, type));
     }

@@ -106,7 +106,7 @@ public class InterpreterTest {
     }
     @Test
     public void count1() throws Exception {
-        Interpreter interpreter = new Interpreter("test_files/out.txt");
+        Interpreter interpreter = new Interpreter();
         List<ElementInterface> inp = new ArrayList<>();
         inp.add(new ElementInterface() {
             @Override
@@ -570,7 +570,7 @@ public class InterpreterTest {
 
     @Test
     public void scopesTest() throws Exception {
-        Interpreter interpreter = new Interpreter("test_files/out.txt");
+        Interpreter interpreter = new Interpreter();
         List<ElementInterface> inp = new ArrayList<>();
         inp.add(new ElementInterface() {
             @Override
