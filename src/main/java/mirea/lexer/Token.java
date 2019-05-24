@@ -2,26 +2,18 @@ package mirea.lexer;
 
 public class Token {
     private TokenType tokenType;
-    private String lexema;
+    private String value;
 
-    Token (TokenType tokenType, String lexema){
+    Token (TokenType tokenType, String value){
         this.tokenType = tokenType;
-        this.lexema = lexema;
+        this.value = value;
     }
 
-    public String getLexema() {
-        return lexema;
-    }
-
-    public void setLexema(String lexema) {
-        this.lexema = lexema;
+    public String getValue() {
+        return value;
     }
 
     public TokenType getTokenType() {
         return tokenType;
-    }
-
-    public void setTokenType(TokenType tokenType) {
-        this.tokenType = tokenType;
     }
 }

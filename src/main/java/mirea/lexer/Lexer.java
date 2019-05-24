@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 
 public class Lexer {
     private StringBuilder input = new StringBuilder();
-    private TokenType tokenType;
-    private String lexema;
-    private boolean exausthed = false;
+    private TokenType type;
+    private String value;
+    private boolean exhausted = false;
     private String errorMessage = "";
     private Set<Character> blankChars = new HashSet<>();
 
@@ -26,7 +26,7 @@ public class Lexer {
         try (Stream<String> st = Files.lines(Paths.get(filePath))) {
             st.forEach(input::append);
         } catch (IOException ex) {
-            exausthed = true;
+            exhausted = true;
             errorMessage = "Could not read file: " + filePath;
             return;
         }
@@ -42,13 +42,13 @@ public class Lexer {
         moveAhead();
     }
 
-    public void moveAhead() {
-        if (exausthed) {
+    private void moveAhead() {
+        if (exhausted) {
             return;
         }
 
         if (input.length() == 0) {
-            exausthed = true;
+            exhausted = true;
             return;
         }
 
@@ -58,7 +58,7 @@ public class Lexer {
             return;
         }
 
-        exausthed = true;
+        exhausted = true;
 
         if (input.length() > 0) {
             errorMessage = "Unexpected symbol: '" + input.charAt(0) + "'";
@@ -82,8 +82,8 @@ public class Lexer {
             int end = t.endOfMatch(input.toString());
 
             if (end != -1) {
-                tokenType = t;
-                lexema = input.substring(0, end);
+                type = t;
+                value = input.substring(0, end);
                 input.delete(0, end);
                 return true;
             }
@@ -92,31 +92,36 @@ public class Lexer {
         return false;
     }
 
-    public TokenType currentTokenType() {
-        return tokenType;
+    private TokenType currentType() {
+        return type;
     }
 
-    public String currentLexema() {
-        return lexema;
+    private String currentValue() {
+        return value;
     }
 
-    public boolean isSuccessful() {
+    private boolean isSuccessful() {
         return errorMessage.length() == 0;
     }
 
-    public String errorMessage() {
+    private String errorMessage() {
         return errorMessage;
     }
 
-    public boolean isExausthed() {
-        return exausthed;
+    private boolean isExhausted() {
+        return exhausted;
     }
 
     public List<Token> getAllTokens() {
         List<Token> allTokens = new ArrayList<>();
-        while (!isExausthed()){
-            allTokens.add(new Token(currentTokenType(), currentLexema()));
+        while (!isExhausted()){
+            allTokens.add(new Token(currentType(), currentValue()));
             moveAhead();
+        }
+        if (!isSuccessful()) try {
+            throw new Exception(errorMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return allTokens;
     }
