@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Stack;
 
 public class Parser {
-    List<Token> inp;
-    Token curToken;
+    private List<Token> inp;
+    private List<Element> out = new ArrayList<>();
+    private Stack<Token> s = new Stack<>();
+    private Token curToken;
+    private int lastNumInPrefix = -1;
     int num = -1;
-    int lastNumInPrefix = -1;
-    Stack<Token> s = new Stack<>();
-    List<Element> out = new ArrayList<>();
 
     public Parser(List<Token> inp) {
         this.inp = inp;
@@ -25,7 +25,7 @@ public class Parser {
         return out;
     }
 
-    public boolean expr() {
+    private boolean expr() {
         int begNum = num;
         if (declar_stmt() || assign_stmt() || while_stmt() || if_stmt() || objectOp_stmt() || print_stmt()) {
             return true;
@@ -34,7 +34,7 @@ public class Parser {
         return false;
     }
 
-    public boolean declar_stmt() {
+    private boolean declar_stmt() {
         int begNum = num;
         if (TYPE() && VAR() && SEMI()) {
             return true;
@@ -43,7 +43,7 @@ public class Parser {
         return false;
     }
 
-    public boolean assign_stmt() {
+    private boolean assign_stmt() {
         int begNum = num;
         if (VAR() && ASSIGN_OP() && (value_stmt() || STRING()) && SEMI()) {
             return true;
@@ -52,7 +52,7 @@ public class Parser {
         return false;
     }
 
-    public boolean while_stmt() {
+    private boolean while_stmt() {
         int begNum = num;
         int condEndRef = -1;
         int condBeg;
@@ -74,7 +74,7 @@ public class Parser {
         return false;
     }
 
-    public boolean if_stmt() {
+    private boolean if_stmt() {
         int elseBeg = -1;
         int ifEndRef = -1;
         int thenEndRef = -1;
@@ -105,7 +105,7 @@ public class Parser {
         return false;
     }
 
-    public boolean objectOp_stmt() {
+    private boolean objectOp_stmt() {
         int begNum = num;
         if ((objectAdd() || objectPut()) && SEMI()) {
             return true;
@@ -114,7 +114,7 @@ public class Parser {
         return false;
     }
 
-    public boolean print_stmt() {
+    private boolean print_stmt() {
         int begNum = num;
         if (PRINT() && (STRING() || value_stmt()) && SEMI()) {
             return true;
@@ -123,7 +123,7 @@ public class Parser {
         return false;
     }
 
-    public boolean value_stmt() {
+    private boolean value_stmt() {
         int begNum = num;
         if (stmt() || b_stmt()) {
             return true;
@@ -132,7 +132,7 @@ public class Parser {
         return false;
     }
 
-    public boolean stmt() {
+    private boolean stmt() {
         int begNum = num;
         if (objectGet() || value()) {
             while (OP() && value_stmt()) {
@@ -143,7 +143,7 @@ public class Parser {
         return false;
     }
 
-    public boolean b_stmt() {
+    private boolean b_stmt() {
         int begNum = num;
         if (L_RB() && value_stmt() && R_RB()) {
             while (OP() && value_stmt()) {
@@ -154,7 +154,7 @@ public class Parser {
         return false;
     }
 
-    public boolean value() {
+    private boolean value() {
         int begNum = num;
         if (VAR() || num()) {
             return true;
@@ -163,8 +163,7 @@ public class Parser {
         return false;
     }
 
-    public boolean num() {
-
+    private boolean num() {
         int begNum = num;
         if (DOUBLE() || INT()) {
             return true;
@@ -173,7 +172,7 @@ public class Parser {
         return false;
     }
 
-    public boolean condition_stmt() {
+    private boolean condition_stmt() {
         int begNum = num;
         if ((condition()) || b_condition() || b_cond_stmt()) {
             return true;
@@ -182,7 +181,7 @@ public class Parser {
         return false;
     }
 
-    public boolean b_cond_stmt() {
+    private boolean b_cond_stmt() {
         int begNum = num;
         if (L_RB() && condition_stmt() && R_RB()) {
             return true;
@@ -191,7 +190,7 @@ public class Parser {
         return false;
     }
 
-    public boolean b_condition() {
+    private boolean b_condition() {
         int begNum = num;
         if (L_RB() && condition() && R_RB()) {
             while (LOG_OP() && condition_stmt()) {
@@ -202,9 +201,9 @@ public class Parser {
         return false;
     }
 
-    public boolean condition() {
+    private boolean condition() {
         int begNum = num;
-        int cycleNum = num;
+        int cycleNum;
         if (value_stmt() && COMP_OP() && value_stmt()) {
             cycleNum = num;
             while (LOG_OP() && condition_stmt()) {
@@ -217,7 +216,7 @@ public class Parser {
         return false;
     }
 
-    public boolean objectGet() {
+    private boolean objectGet() {
         int begNum = num;
         if (VAR() && DOT() && GET() && value_stmt()) {
             return true;
@@ -226,7 +225,7 @@ public class Parser {
         return false;
     }
 
-    public boolean objectAdd() {
+    private boolean objectAdd() {
         int begNum = num;
         if (VAR() && DOT() && ADD() && value_stmt()) {
             return true;
@@ -235,7 +234,7 @@ public class Parser {
         return false;
     }
 
-    public boolean objectPut() {
+    private boolean objectPut() {
         int begNum = num;
         if (VAR() && DOT() && PUT() && value_stmt() && COMMA() && value_stmt()) {
             return true;
@@ -244,107 +243,107 @@ public class Parser {
         return false;
     }
 
-    public boolean VAR() {
+    private boolean VAR() {
         return checkToken("VAR");
     }
 
-    public boolean ASSIGN_OP() {
+    private boolean ASSIGN_OP() {
         return checkToken("ASSIGN_OP");
     }
 
-    public boolean DOUBLE() {
+    private boolean DOUBLE() {
         return checkToken("DOUBLE");
     }
 
-    public boolean INT() {
+    private boolean INT() {
         return checkToken("INT");
     }
 
-    public boolean STRING() {
+    private boolean STRING() {
         return checkToken("STRING");
     }
 
-    public boolean OP() {
+    private boolean OP() {
         return checkToken("OP");
     }
 
-    public boolean COMP_OP() {
+    private boolean COMP_OP() {
         return checkToken("COMP_OP");
     }
 
-    public boolean LOG_OP() {
+    private boolean LOG_OP() {
         return checkToken("LOG_OP");
     }
 
-    public boolean WHILE() {
+    private boolean WHILE() {
         return checkToken(("WHILE"));
     }
 
-    public boolean DO() {
+    private boolean DO() {
         return checkToken("DO");
     }
 
-    public boolean IF() {
+    private boolean IF() {
         return checkToken("IF");
     }
 
-    public boolean THEN() {
+    private boolean THEN() {
         return checkToken("THEN");
     }
 
-    public boolean ELSE() {
+    private boolean ELSE() {
         return checkToken("ELSE");
     }
 
-    public boolean PRINT() {
+    private boolean PRINT() {
         return checkToken("PRINT");
     }
 
-    public boolean TYPE() {
+    private boolean TYPE() {
         return checkToken("TYPE");
     }
 
-    public boolean PUT() {
+    private boolean PUT() {
         return checkToken("PUT");
     }
 
-    public boolean ADD() {
+    private boolean ADD() {
         return checkToken("ADD");
     }
 
-    public boolean GET() {
+    private boolean GET() {
         return checkToken("GET");
     }
 
-    public boolean DOT() {
+    private boolean DOT() {
         return checkToken("DOT");
     }
 
-    public boolean COMMA() {
+    private boolean COMMA() {
         return checkToken("COMMA");
     }
 
-    public boolean SEMI() {
+    private boolean SEMI() {
         return checkToken("SEMI");
     }
 
-    public boolean L_CB() {
+    private boolean L_CB() {
         return checkToken("L_CB");
     }
 
-    public boolean R_CB() {
+    private boolean R_CB() {
         return checkToken("R_CB");
     }
 
-    public boolean L_RB() {
+    private boolean L_RB() {
         return checkToken("L_RB");
     }
 
-    public boolean R_RB() {
+    private boolean R_RB() {
         return checkToken("R_RB");
     }
 
-    public boolean checkToken(String reqTokenTypeName) {
+    private boolean checkToken(String reqTokenTypeName) {
         if (num == inp.size() - 1) return false;
         int begNum = num;
         match();
@@ -359,11 +358,11 @@ public class Parser {
         return false;
     }
 
-    public void match() {
+    private void match() {
         curToken = inp.get(++num);
     }
 
-    public Element toElement(Token token) {
+    private Element toElement(Token token) {
         switch (token.getTokenType().name()) {
             case "ASSIGN_OP":
             case "ADD":
@@ -372,16 +371,15 @@ public class Parser {
             case "LOG_OP":
             case "COMP_OP":
             case "PRINT":
-                return new Element("OP", token.getLexema());
+                return new Element("OP", token.getValue());
             case "TYPE":
-                return new Element("DEF", token.getLexema());
+                return new Element("DEF", token.getValue());
             default:
                 return new Element(token);
         }
     }
 
-    public void toReverseNot(Token token) {
-
+    private void toReverseNot(Token token) {
         switch (token.getTokenType().name()) {
             case "R_RB":
                 while (!s.peek().getTokenType().equals(TokenType.L_RB)) {
@@ -396,8 +394,8 @@ public class Parser {
                 s.add(curToken);
                 break;
             case "OP":
-                String prevTokenLex = inp.get(num - 1).getLexema();
-                if ((prevTokenLex.equals("(") || prevTokenLex.equals("=")) && token.getLexema().equals("-")) {
+                String prevTokenLex = inp.get(num - 1).getValue();
+                if ((prevTokenLex.equals("(") || prevTokenLex.equals("=")) && token.getValue().equals("-")) {
                     out.add(new Element("INT", "0"));
                 }
             case "COMP_OP":
@@ -462,16 +460,16 @@ public class Parser {
         }
     }
 
-    public static int priority(Token token) {
-        if (token.getLexema().equals("="))
+    private static int priority(Token token) {
+        if (token.getValue().equals("="))
             return 1;
-        if (token.getLexema().equals("||")) return 2;
-        if (token.getLexema().equals("&&")) return 3;
+        if (token.getValue().equals("||")) return 2;
+        if (token.getValue().equals("&&")) return 3;
         if (token.getTokenType().equals(TokenType.COMP_OP))
             return 4;
-        if (token.getLexema().equals("-") || token.getLexema().equals("+"))
+        if (token.getValue().equals("-") || token.getValue().equals("+"))
             return 5;
-        if (token.getLexema().equals("*") || token.getLexema().equals("/"))
+        if (token.getValue().equals("*") || token.getValue().equals("/"))
             return 6;
         return 0;
     }

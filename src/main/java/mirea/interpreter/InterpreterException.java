@@ -1,6 +1,6 @@
 package mirea.interpreter;
 
-public class InterpreterException extends Exception {
+class InterpreterException extends Exception {
     InterpreterException(String message){
         super(message);
     }

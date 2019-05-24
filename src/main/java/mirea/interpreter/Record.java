@@ -5,7 +5,7 @@ package mirea.interpreter;
  * Contains name, value and type of variable.
  * @see SymbolTable
  */
-public class Record {
+class Record {
     private String name;
     private Object value;
     private String type;
@@ -16,27 +16,19 @@ public class Record {
         this.type = type;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Object getValue() {
+    Object getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    void setValue(Object value) {
         this.value = value;
     }
 
-    public String getType() {
+    String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

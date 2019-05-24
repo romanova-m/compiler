@@ -4,20 +4,20 @@ import mirea.interpreter.ElementInterface;
 import mirea.lexer.Token;
 
 public class Element implements ElementInterface {
-    String type;
-    String value;
+    private String type;
+    private String value;
 
-    public Element (String type, String value) {
+    Element(String type, String value) {
         this.type = type;
         this.value = value;
     }
 
-    public Element (Token token) {
+    Element(Token token) {
         this.type = token.getTokenType().name();
-        this.value = token.getLexema();
+        this.value = token.getValue();
     }
 
-    public Element() {
+    Element() {
     }
 
     public String getType() {

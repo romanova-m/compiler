@@ -1,6 +1,5 @@
 package mirea.lexer;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,10 +10,10 @@ public class LexerTest {
 
     @Test
     public void getAllTokens() {
-        Lexer lexer = new Lexer(testFolder + "typesTest");
+        Lexer lexer = new Lexer(testFolder + "typesTest.txt");
         List<Token> tokenList = lexer.getAllTokens();
-        for (int i = 0; i < tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+        for (Token aTokenList : tokenList) {
+            System.out.printf("tokenType: %s, value: %s\n", aTokenList.getTokenType(), aTokenList.getValue());
         }
     }
 }

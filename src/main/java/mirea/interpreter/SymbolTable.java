@@ -9,12 +9,12 @@ import java.util.HashMap;
  *
  * @see Record
  */
-public class SymbolTable {
+class SymbolTable {
     ArrayList<HashMap<String, Record>> tables = new ArrayList<>();
     int position = -1;
 
     /*
-     * Creating new scope on init, can be removed
+     * Creating new scope on init
      */
     SymbolTable(){
         enterScope();
@@ -22,21 +22,21 @@ public class SymbolTable {
     /**
      * Increase nesting level
      */
-    public void enterScope(){
+    void enterScope(){
         if (tables.size() <= ++position)
             tables.add(new HashMap<>());
     }
     /**
      * Decrease nesting level
      */
-    public void exitScope(){
+    void exitScope(){
         tables.remove(position--);
     }
     /**
      * Inserts symbol into current scope
      * @param record structure to insert
      */
-    public void insertSymbol(Record record){
+    void insertSymbol(Record record){
         tables.get(position).put(record.getName(), record);
     }
     /**
@@ -44,7 +44,7 @@ public class SymbolTable {
      * @param name name of symbol to search
      * @return {@code null} if not found, {@link Record} if found</>
      */
-    public Record lookup(String name){
+    Record lookup(String name){
         Record result;
         for (int i = position; i >= 0; i--){
             if ((result = tables.get(i).get(name)) != null) return result;
@@ -56,7 +56,7 @@ public class SymbolTable {
      * @param name name of symbol to search
      * @return {@code null} if not found, {@link Record} if found</>
      */
-    public Record localLookup(String name) {
+    Record localLookup(String name) {
         return tables.get(position).get(name);
     }
 }

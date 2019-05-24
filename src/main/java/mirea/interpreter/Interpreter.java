@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 /**
  * Class to process and evaluate Parser output.
  */
-public class Interpreter {
+class Interpreter {
 
     private LinkedList<ElementInterface> stack = new LinkedList<>();
     private SymbolTable symbolTable = new SymbolTable();
@@ -26,7 +26,6 @@ public class Interpreter {
     private final String VAR_TYPE = "VAR";
     private final String DEF_TYPE = "DEF";
     private final String TR_TYPE = "TRANS";
-    private final String TRF_TYPE = "TRANS";
     private final String LB_TYPE = "L_CB";
     private final String RB_TYPE = "R_CB";
 
@@ -327,6 +326,7 @@ public class Interpreter {
      * @param destination destination List, type should match LIST_TYPE
      * @throws InterpreterException when wrong types
      */
+    @SuppressWarnings("unchecked")
     private void addEl(ElementInterface element, ElementInterface destination)
             throws InterpreterException {
         Record record = symbolTable.lookup(destination.getValue());
@@ -356,12 +356,12 @@ public class Interpreter {
                 " in this scope");
         switch (record.getType()) {
             case LIST_TYPE:
-                List<Integer> list = (LinkedList<Integer>) record.getValue();
+                @SuppressWarnings("unchecked") List<Integer> list = (LinkedList<Integer>) record.getValue();
                 val = list.get(intVal(index.getValue()));
                 logger.fine("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
             case MAP_TYPE:
-                Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
+                @SuppressWarnings("unchecked") Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
                 val = map.get(intVal(index.getValue()));
                 logger.fine("Got " + inp.getValue() + "[" + index + "]=" + val);
                 break;
@@ -385,7 +385,7 @@ public class Interpreter {
         if (!record.getType().equals(MAP_TYPE)) {
             throw new InterpreterException("Trying putting to: " + record.getType() + ", required: MAP.");
         }
-        Map<Integer, Integer> map = (HashMap<Integer, Integer>) record.getValue();
+        @SuppressWarnings("unchecked")Map<Integer, Integer> map =(HashMap<Integer, Integer>) record.getValue();
         map.put(intVal(key.getValue()), intVal(val.getValue()));
         logger.fine("Put to " + inp.getValue() + " [" + key.getValue() + "," + val.getValue() + "]");
 

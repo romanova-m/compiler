@@ -20,8 +20,8 @@ public class ParserTest {
         Lexer lexer = new Lexer(testFolder + "langTest");
         List<Token> tokenList = lexer.getAllTokens();
         assertFalse(tokenList.isEmpty());
-        for (int i=0; i<tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+        for (Token aTokenList : tokenList) {
+            System.out.printf("tokenType: %s, lexema: %s\n", aTokenList.getTokenType(), aTokenList.getValue());
         }
         Parser parser = new Parser(tokenList);
         List<Element> out = (parser.lang());

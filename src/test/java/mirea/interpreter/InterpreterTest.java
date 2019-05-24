@@ -629,7 +629,7 @@ public class InterpreterTest {
         inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return "(";
+                return "L_CB";
             }
 
             @Override
@@ -716,7 +716,7 @@ public class InterpreterTest {
         inp.add(new ElementInterface() {
             @Override
             public String getType() {
-                return ")";
+                return "R_CB";
             }
 
             @Override

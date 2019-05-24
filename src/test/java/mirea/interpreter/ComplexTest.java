@@ -21,7 +21,7 @@ public class ComplexTest {
             assertFalse(tokenList.isEmpty());
 
             for (int i=0; i<tokenList.size(); i++) {
-                System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+                System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
             }
 
             Parser parser = new Parser(tokenList);
@@ -42,7 +42,7 @@ public class ComplexTest {
         assertFalse(tokenList.isEmpty());
 
         for (int i=0; i<tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
         }
 
         Parser parser = new Parser(tokenList);
@@ -62,7 +62,7 @@ public class ComplexTest {
         List<Token> tokenList = lexer.getAllTokens();
         assertFalse(tokenList.isEmpty());
         for (int i=0; i<tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getLexema());
+            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
         }
         Parser parser = new Parser(tokenList);
         List<Element> out = (parser.lang());
