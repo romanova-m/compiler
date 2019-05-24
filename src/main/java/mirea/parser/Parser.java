@@ -134,7 +134,7 @@ public class Parser {
 
     private boolean stmt() {
         int begNum = num;
-        if (objectGet() || value()) {
+        if (objectMethodWithReturnValue() || value()) {
             while (OP() && value_stmt()) {
             }
             return true;
@@ -216,9 +216,9 @@ public class Parser {
         return false;
     }
 
-    private boolean objectGet() {
+    private boolean objectMethodWithReturnValue() {
         int begNum = num;
-        if (VAR() && DOT() && GET() && value_stmt()) {
+        if (VAR() && DOT() && (GET() || CONTAINS() || ADD() || PUT()) && value_stmt()) {
             return true;
         }
         num = begNum;
@@ -233,6 +233,7 @@ public class Parser {
         num = begNum;
         return false;
     }
+
 
     private boolean objectPut() {
         int begNum = num;
@@ -311,6 +312,8 @@ public class Parser {
         return checkToken("ADD");
     }
 
+    private boolean CONTAINS() { return checkToken("CONTAINS"); }
+
     private boolean GET() {
         return checkToken("GET");
     }
@@ -368,6 +371,7 @@ public class Parser {
             case "ADD":
             case "GET":
             case "PUT":
+            case "CONTAINS":
             case "LOG_OP":
             case "COMP_OP":
             case "PRINT":
@@ -419,6 +423,7 @@ public class Parser {
             case "GET":
             case "ADD":
             case "PUT":
+            case "CONTAINS":
                 out.set(out.size() - 1, new Element("ADR", out.get(out.size() - 1).getValue()));
             case "TYPE":
             case "PRINT":
