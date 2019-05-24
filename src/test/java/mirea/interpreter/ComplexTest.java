@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class ComplexTest {
-    String testFolder = "test_files/";
+    private String testFolder = "test_files/";
 
     @Test
     public void compTest() throws Exception {
@@ -20,16 +20,8 @@ public class ComplexTest {
             List<Token> tokenList = lexer.getAllTokens();
             assertFalse(tokenList.isEmpty());
 
-            for (int i=0; i<tokenList.size(); i++) {
-                System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
-            }
-
             Parser parser = new Parser(tokenList);
             List<Element> out = (parser.lang());
-
-            for (int i=0; i<out.size(); i++) {
-                System.out.printf("%d: type: %s, value: %s\n", i, out.get(i).getType(), out.get(i).getValue());
-            }
 
             Interpreter interpreter = new Interpreter();
             interpreter.count(out);
@@ -41,18 +33,10 @@ public class ComplexTest {
         List<Token> tokenList = lexer.getAllTokens();
         assertFalse(tokenList.isEmpty());
 
-        for (int i=0; i<tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
-        }
-
         Parser parser = new Parser(tokenList);
         List<Element> out = (parser.lang());
 
-        for (int i=0; i<out.size(); i++) {
-            System.out.printf("%d: type: %s, value: %s\n", i, out.get(i).getType(), out.get(i).getValue());
-        }
-
-        Interpreter interpreter = new Interpreter(testFolder + "out.txt");
+        Interpreter interpreter = new Interpreter();
         interpreter.count(out);
     }
 
@@ -61,14 +45,8 @@ public class ComplexTest {
         Lexer lexer = new Lexer(testFolder + "compTest1.txt");
         List<Token> tokenList = lexer.getAllTokens();
         assertFalse(tokenList.isEmpty());
-        for (int i=0; i<tokenList.size(); i++) {
-            System.out.printf("tokenType: %s, lexema: %s\n", tokenList.get(i).getTokenType(), tokenList.get(i).getValue());
-        }
         Parser parser = new Parser(tokenList);
         List<Element> out = (parser.lang());
-        for (int i=0; i<out.size(); i++) {
-            System.out.printf("%d: type: %s, value: %s\n", i, out.get(i).getType(), out.get(i).getValue());
-        }
         Interpreter interpreter = new Interpreter(testFolder + "out.txt");
         interpreter.count(out);
     }

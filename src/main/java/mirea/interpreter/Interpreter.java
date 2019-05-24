@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import mirea.structures.CustomList;
+import mirea.structures.CustomSet;
+
 /**
  * Class to process and evaluate Parser output.
  */
@@ -22,6 +24,7 @@ class Interpreter {
     private final String DOUBLE_TYPE = "DOUBLE";
     private final String STRING_TYPE = "STRING";
     private final String LIST_TYPE = "List";
+    private final String SET_TYPE = "Set";
     private final String MAP_TYPE = "Map";
     private final String OP_TYPE = "OP";
     private final String ADR_TYPE = "ADR";
@@ -46,10 +49,10 @@ class Interpreter {
     /**
      * Method takes RPN List as argument and returns string result of calculations.
      * @param elements RPN in List
-     * @return result of calculations
+     * @return 0 if completed successfully
      * @throws Exception if type problems found
      */
-    public String count(List<? extends ElementInterface> elements) throws Exception {
+    public int count(List<? extends ElementInterface> elements) throws Exception {
         for (int i = 0; i < elements.size(); i++) {
              ElementInterface element = elements.get(i);
              logger.info("On element " + i + ", type: " + element.getType() +
@@ -82,7 +85,7 @@ class Interpreter {
              }
              logger.info("Stack: " + strVal(stack));
          }
-         return stack.isEmpty() ? null : stack.pop().getValue();
+         return 0;
      }
 
     private void processOp(String value) throws Exception {
@@ -107,6 +110,7 @@ class Interpreter {
             case "add":     addEl( stack.pop(), stack.pop()); break;
             case "get":     getEl( stack.pop(), stack.pop()); break;
             case "put":     putEl( stack.pop(), stack.pop(), stack.pop()); break;
+            case "contains": containsEl( stack.pop(), stack.pop()); break;
 
             case "print":   System.out.println("" + stack.pop().getValue()); break;
             case "println": System.out.println("" + stack.pop().getValue()); break;
@@ -331,16 +335,51 @@ class Interpreter {
     private void addEl(ElementInterface element, ElementInterface destination)
             throws InterpreterException {
         Record record = symbolTable.lookup(destination.getValue());
+
         if (!element.getType().equals(INT_TYPE)) {
             throw new InterpreterException("Type mismatch: " + element.getType() + ", required: INT");
         }
 
-        if (!record.getType().equals(LIST_TYPE)) {
-            throw new InterpreterException("Trying yo put to type " + record.getType());
+        switch (record.getType()) {
+            case LIST_TYPE:
+                @SuppressWarnings("unchecked") CustomList<Integer> list = (CustomList<Integer>) record.getValue();
+                list.add(intVal(element.getValue()));
+                break;
+            case SET_TYPE:
+                @SuppressWarnings("unchecked") CustomSet<Integer> set = (CustomSet<Integer>) record.getValue();
+                set.add(intVal(element.getValue()));
+                break;
+            default: throw new InterpreterException("Trying yo put to type " + record.getType());
         }
-        @SuppressWarnings("unchecked")CustomList<Integer> list = (CustomList<Integer>) record.getValue();
-        list.add(intVal(element.getValue()));
         logger.fine("Put to " + destination.getValue() + " " + element);
+    }
+
+    /**
+     * Adds element of type int to destination List
+     *
+     * @param element element to add, should be INT_TYPE
+     * @param destination destination List, type should match LIST_TYPE
+     * @throws InterpreterException when wrong types
+     */
+    private void containsEl(ElementInterface element, ElementInterface destination)
+            throws InterpreterException {
+        Record record = symbolTable.lookup(destination.getValue());
+
+        if (!element.getType().equals(INT_TYPE)) {
+            throw new InterpreterException("Type mismatch: " + element.getType() + ", required: INT");
+        }
+
+        switch (record.getType()) {
+            case LIST_TYPE:
+                @SuppressWarnings("unchecked") CustomList<Integer> list = (CustomList<Integer>) record.getValue();
+                stack.push(mkElement(INT_TYPE, bToI(list.contains(intVal(element.getValue()))).toString()));
+                break;
+            case SET_TYPE:
+                @SuppressWarnings("unchecked") CustomSet<Integer> set = (CustomSet<Integer>) record.getValue();
+                stack.push(mkElement(INT_TYPE, bToI(set.contains(intVal(element.getValue()))).toString()));
+                break;
+            default: throw new InterpreterException("Trying yo put to type " + record.getType());
+        }
     }
 
     /**
@@ -429,6 +468,7 @@ class Interpreter {
         Object value = null;
         logger.fine("Symbol table insert symbol " + name + " type " + type);
         if (type.equals(LIST_TYPE)) value = new CustomList<Integer>(); // int list
+        if (type.equals(SET_TYPE)) value = new CustomSet<Integer>(); // int list
         if (type.equals(MAP_TYPE)) value = new HashMap<Integer, Integer>(); // int int map
         symbolTable.insertSymbol(new Record(name, value, type));
     }
