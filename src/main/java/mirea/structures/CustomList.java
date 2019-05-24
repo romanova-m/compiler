@@ -95,4 +95,13 @@ public class CustomList<E> {
             l.next = newNode;
         size++;
     }
+
+    public Boolean contains(E e) {
+        Node<E> node = first;
+        while (node != null){
+            if (node.value.equals(e)) return true;
+            node = node.next;
+        }
+        return false;
+    }
 }

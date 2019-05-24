@@ -1,2 +1,19 @@
-Hello from inner scope
-Hello from outer scope
+"Hello from outer scope"
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+"Hello from inner scope"
+"Проверка set и map"
+"Ожидается 10: "
+10
+"Ожидается 0 1 0: "
+0
+1
+0

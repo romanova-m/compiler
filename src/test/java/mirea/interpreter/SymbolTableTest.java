@@ -51,6 +51,6 @@ public class SymbolTableTest {
         Record test = new Record("a", "1", "int");
         symbolTable.insertSymbol(test);
         assertEquals( test, symbolTable.lookup("a"));
-        assertEquals( null, symbolTable.lookup("b"));
+        assertNull(symbolTable.lookup("b"));
     }
 }
